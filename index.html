@@ -1,11 +1,25 @@
+<!DOCTYPE HTML>
+<html>
+
 <head>
-  <title>Elm Reactor</title>
-  <script src="elm.js" charset="utf-8"></script>
+  <meta charset="UTF-8">
+  <title>keyput.com</title>
+  <script type="text/javascript" src="elm.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <script type="text/javascript">
-    window.addEventListener("DOMContentLoaded", function (){
-      Elm.fullscreen(Elm.Main, { });
-    })
-  </script>
 </body>
+
+<script type="text/javascript">
+var storedState = localStorage.getItem('keyput-state');
+var startingState = storedState ? JSON.parse(storedState) : null;
+var keyput = Elm.fullscreen(Elm.Main, { getStorage: startingState });
+
+keyput.ports.setStorage.subscribe(function(state) {
+    localStorage.setItem('keyput-state', JSON.stringify(state));
+});
+</script>
+
+</html>
+
