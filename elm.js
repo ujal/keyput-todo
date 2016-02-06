@@ -11029,29 +11029,33 @@ Elm.Main.make = function (_elm) {
    var getStorage = Elm.Native.Port.make(_elm).inbound("getStorage",
    "Maybe.Maybe Main.Model",
    function (v) {
-      return v === null ? Elm.Maybe.make(_elm).Nothing : Elm.Maybe.make(_elm).Just(typeof v === "object" && "field" in v && "items" in v && "matchedItems" in v && "uid" in v ? {_: {}
-                                                                                                                                                                                ,field: typeof v.field === "string" || typeof v.field === "object" && v.field instanceof String ? v.field : _U.badPort("a string",
-                                                                                                                                                                                v.field)
-                                                                                                                                                                                ,items: typeof v.items === "object" && v.items instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.items.map(function (v) {
-                                                                                                                                                                                   return typeof v === "object" && "desc" in v && "id" in v ? {_: {}
-                                                                                                                                                                                                                                              ,desc: typeof v.desc === "string" || typeof v.desc === "object" && v.desc instanceof String ? v.desc : _U.badPort("a string",
-                                                                                                                                                                                                                                              v.desc)
-                                                                                                                                                                                                                                              ,id: typeof v.id === "number" && isFinite(v.id) && Math.floor(v.id) === v.id ? v.id : _U.badPort("an integer",
-                                                                                                                                                                                                                                              v.id)} : _U.badPort("an object with fields `desc`, `id`",
-                                                                                                                                                                                   v);
-                                                                                                                                                                                })) : _U.badPort("an array",
-                                                                                                                                                                                v.items)
-                                                                                                                                                                                ,matchedItems: typeof v.matchedItems === "object" && v.matchedItems instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.matchedItems.map(function (v) {
-                                                                                                                                                                                   return typeof v === "object" && "desc" in v && "id" in v ? {_: {}
-                                                                                                                                                                                                                                              ,desc: typeof v.desc === "string" || typeof v.desc === "object" && v.desc instanceof String ? v.desc : _U.badPort("a string",
-                                                                                                                                                                                                                                              v.desc)
-                                                                                                                                                                                                                                              ,id: typeof v.id === "number" && isFinite(v.id) && Math.floor(v.id) === v.id ? v.id : _U.badPort("an integer",
-                                                                                                                                                                                                                                              v.id)} : _U.badPort("an object with fields `desc`, `id`",
-                                                                                                                                                                                   v);
-                                                                                                                                                                                })) : _U.badPort("an array",
-                                                                                                                                                                                v.matchedItems)
-                                                                                                                                                                                ,uid: typeof v.uid === "number" && isFinite(v.uid) && Math.floor(v.uid) === v.uid ? v.uid : _U.badPort("an integer",
-                                                                                                                                                                                v.uid)} : _U.badPort("an object with fields `field`, `items`, `matchedItems`, `uid`",
+      return v === null ? Elm.Maybe.make(_elm).Nothing : Elm.Maybe.make(_elm).Just(typeof v === "object" && "field" in v && "items" in v && "itemsIndex" in v && "matchedItems" in v && "matchedItemsIndex" in v && "uid" in v ? {_: {}
+                                                                                                                                                                                                                                 ,field: typeof v.field === "string" || typeof v.field === "object" && v.field instanceof String ? v.field : _U.badPort("a string",
+                                                                                                                                                                                                                                 v.field)
+                                                                                                                                                                                                                                 ,items: typeof v.items === "object" && v.items instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.items.map(function (v) {
+                                                                                                                                                                                                                                    return typeof v === "object" && "desc" in v && "id" in v ? {_: {}
+                                                                                                                                                                                                                                                                                               ,desc: typeof v.desc === "string" || typeof v.desc === "object" && v.desc instanceof String ? v.desc : _U.badPort("a string",
+                                                                                                                                                                                                                                                                                               v.desc)
+                                                                                                                                                                                                                                                                                               ,id: typeof v.id === "number" && isFinite(v.id) && Math.floor(v.id) === v.id ? v.id : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                                               v.id)} : _U.badPort("an object with fields `desc`, `id`",
+                                                                                                                                                                                                                                    v);
+                                                                                                                                                                                                                                 })) : _U.badPort("an array",
+                                                                                                                                                                                                                                 v.items)
+                                                                                                                                                                                                                                 ,itemsIndex: v.itemsIndex === null ? Elm.Maybe.make(_elm).Nothing : Elm.Maybe.make(_elm).Just(typeof v.itemsIndex === "number" && isFinite(v.itemsIndex) && Math.floor(v.itemsIndex) === v.itemsIndex ? v.itemsIndex : _U.badPort("an integer",
+                                                                                                                                                                                                                                 v.itemsIndex))
+                                                                                                                                                                                                                                 ,matchedItems: typeof v.matchedItems === "object" && v.matchedItems instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.matchedItems.map(function (v) {
+                                                                                                                                                                                                                                    return typeof v === "object" && "desc" in v && "id" in v ? {_: {}
+                                                                                                                                                                                                                                                                                               ,desc: typeof v.desc === "string" || typeof v.desc === "object" && v.desc instanceof String ? v.desc : _U.badPort("a string",
+                                                                                                                                                                                                                                                                                               v.desc)
+                                                                                                                                                                                                                                                                                               ,id: typeof v.id === "number" && isFinite(v.id) && Math.floor(v.id) === v.id ? v.id : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                                               v.id)} : _U.badPort("an object with fields `desc`, `id`",
+                                                                                                                                                                                                                                    v);
+                                                                                                                                                                                                                                 })) : _U.badPort("an array",
+                                                                                                                                                                                                                                 v.matchedItems)
+                                                                                                                                                                                                                                 ,matchedItemsIndex: v.matchedItemsIndex === null ? Elm.Maybe.make(_elm).Nothing : Elm.Maybe.make(_elm).Just(typeof v.matchedItemsIndex === "number" && isFinite(v.matchedItemsIndex) && Math.floor(v.matchedItemsIndex) === v.matchedItemsIndex ? v.matchedItemsIndex : _U.badPort("an integer",
+                                                                                                                                                                                                                                 v.matchedItemsIndex))
+                                                                                                                                                                                                                                 ,uid: typeof v.uid === "number" && isFinite(v.uid) && Math.floor(v.uid) === v.uid ? v.uid : _U.badPort("an integer",
+                                                                                                                                                                                                                                 v.uid)} : _U.badPort("an object with fields `field`, `items`, `itemsIndex`, `matchedItems`, `matchedItemsIndex`, `uid`",
       v));
    });
    var is13 = function (code) {    return _U.eq(code,13) ? $Result.Ok({ctor: "_Tuple0"}) : $Result.Err("not the right key code");};
@@ -11088,13 +11092,13 @@ Elm.Main.make = function (_elm) {
       switch (_p2.ctor)
       {case "NoOp": return model;
          case "UpdateField": var _p3 = _p2._0;
-           var regex = $Regex.regex(A2($String.join,
+           var regex = $Regex.caseInsensitive($Regex.regex(A2($String.join,
            "",
            A2($List.map,
            function (c) {
-              return A2($Basics._op["++"],".*",$String.fromChar(c));
+              return A2($Basics._op["++"],".*",$Regex.escape($String.fromChar(c)));
            },
-           $String.toList(A2($String.join,"",A2($String.split," ",_p3))))));
+           $String.toList(A2($String.join,"",A2($String.split," ",_p3)))))));
            var contains = function (item) {    return A2($Regex.contains,regex,item.desc);};
            var matchedItems = A2($List.filter,contains,model.items);
            return _U.update(model,{field: _p3,matchedItems: matchedItems});
@@ -11105,7 +11109,7 @@ Elm.Main.make = function (_elm) {
            ,field: isMatch ? model.field : ""
            ,items: isEmpty || isMatch ? model.items : A2($Basics._op["++"],model.items,_U.list([A2(newItem,model.field,model.uid)]))});}
    });
-   var emptyModel = {field: "",items: _U.list([]),matchedItems: _U.list([]),uid: 0};
+   var emptyModel = {field: "",items: _U.list([]),itemsIndex: $Maybe.Just(0),matchedItems: _U.list([]),matchedItemsIndex: $Maybe.Nothing,uid: 0};
    var initialModel = A2($Maybe.withDefault,emptyModel,getStorage);
    var model = A3($Signal.foldp,update,initialModel,actions.signal);
    var main = A2($Signal.map,view(actions.address),model);
@@ -11113,12 +11117,14 @@ Elm.Main.make = function (_elm) {
    function (v) {
       return {field: v.field
              ,items: Elm.Native.List.make(_elm).toArray(v.items).map(function (v) {    return {desc: v.desc,id: v.id};})
+             ,itemsIndex: v.itemsIndex.ctor === "Nothing" ? null : v.itemsIndex._0
              ,matchedItems: Elm.Native.List.make(_elm).toArray(v.matchedItems).map(function (v) {    return {desc: v.desc,id: v.id};})
+             ,matchedItemsIndex: v.matchedItemsIndex.ctor === "Nothing" ? null : v.matchedItemsIndex._0
              ,uid: v.uid};
    },
    model);
    var Item = F2(function (a,b) {    return {desc: a,id: b};});
-   var Model = F4(function (a,b,c,d) {    return {field: a,items: b,matchedItems: c,uid: d};});
+   var Model = F6(function (a,b,c,d,e,f) {    return {field: a,items: b,itemsIndex: c,matchedItems: d,matchedItemsIndex: e,uid: f};});
    return _elm.Main.values = {_op: _op
                              ,Model: Model
                              ,Item: Item

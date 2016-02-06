@@ -18,7 +18,9 @@ import Time
 type alias Model =
     { field : String
     , items : List Item
+    , itemsIndex : Maybe Int
     , matchedItems : List Item
+    , matchedItemsIndex : Maybe Int
     , uid : Int
     }
 
@@ -33,7 +35,9 @@ emptyModel : Model
 emptyModel =
     { field = ""
     , items = []
+    , itemsIndex = Just 0
     , matchedItems = []
+    , matchedItemsIndex = Nothing
     , uid = 0
     }
 
@@ -60,14 +64,14 @@ update action model =
         UpdateField str ->
             let matchedItems  = List.filter contains model.items
                 contains item = Regex.contains regex item.desc
-                regex =
-                    str
+                regex = str
                         |> String.split " "
                         |> String.join ""
                         |> String.toList
-                        |> List.map (\c -> ".*" ++ (String.fromChar c))
+                        |> List.map (\c -> ".*" ++ (Regex.escape (String.fromChar c)))
                         |> String.join ""
                         |> Regex.regex
+                        |> Regex.caseInsensitive
             in
                 { model |
                     field = str,
