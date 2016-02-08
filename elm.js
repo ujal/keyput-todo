@@ -11060,8 +11060,14 @@ Elm.Main.make = function (_elm) {
       v));
    });
    var item = F3(function (address,model,item) {
+      var paddingLeft = _U.eq($Maybe.Just(item.index),model.current) ? "1.294rem" : "";
+      var borderLeft = _U.eq($Maybe.Just(item.index),model.current) ? ".6472rem solid #333" : "";
       var fontWeight = _U.eq($Maybe.Just(item.index),model.current) ? "bold" : "normal";
-      return A2($Html.li,_U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "font-weight",_1: fontWeight}]))]),_U.list([$Html.text(item.desc)]));
+      return A2($Html.li,
+      _U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "font-weight",_1: fontWeight}
+                                              ,{ctor: "_Tuple2",_0: "border-left",_1: borderLeft}
+                                              ,{ctor: "_Tuple2",_0: "padding-left",_1: paddingLeft}]))]),
+      _U.list([$Html.text(item.desc)]));
    });
    var Up = {ctor: "Up"};
    var Down = {ctor: "Down"};
@@ -11079,9 +11085,10 @@ Elm.Main.make = function (_elm) {
               _U.list([$Html$Attributes.autofocus(true)
                       ,$Html$Attributes.value(model.field)
                       ,A2($Html$Events.onKeyDown,address,keyHandler)
-                      ,A3($Html$Events.on,"input",$Html$Events.targetValue,function (_p1) {    return A2($Signal.message,address,UpdateField(_p1));})]),
+                      ,A3($Html$Events.on,"input",$Html$Events.targetValue,function (_p1) {    return A2($Signal.message,address,UpdateField(_p1));})
+                      ,$Html$Attributes.$class("input")]),
               _U.list([]))
-              ,A2($Html.ul,_U.list([]),A2($List.map,A2(item,address,model),items))]));
+              ,A2($Html.ul,_U.list([$Html$Attributes.$class("list")]),A2($List.map,A2(item,address,model),items))]));
    });
    var actions = $Signal.mailbox(NoOp);
    var newItem = F3(function (desc,id,index) {    return {desc: desc,id: id,index: index};});
@@ -11124,15 +11131,6 @@ Elm.Main.make = function (_elm) {
    var initialModel = A2($Maybe.withDefault,emptyModel,getStorage);
    var model = A3($Signal.foldp,update,initialModel,actions.signal);
    var main = A2($Signal.map,view(actions.address),model);
-   var modelLogger = Elm.Native.Port.make(_elm).outboundSignal("modelLogger",
-   function (v) {
-      return {field: v.field
-             ,items: Elm.Native.List.make(_elm).toArray(v.items).map(function (v) {    return {desc: v.desc,id: v.id,index: v.index};})
-             ,matchedItems: Elm.Native.List.make(_elm).toArray(v.matchedItems).map(function (v) {    return {desc: v.desc,id: v.id,index: v.index};})
-             ,uid: v.uid
-             ,current: v.current.ctor === "Nothing" ? null : v.current._0};
-   },
-   A2($Signal.map,$Debug.log(""),model));
    var setStorage = Elm.Native.Port.make(_elm).outboundSignal("setStorage",
    function (v) {
       return {field: v.field

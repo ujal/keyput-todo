@@ -1,0 +1,25 @@
+@import 'normalize.css';
+
+html, body {
+  height: 98%;
+}
+
+.input {
+  display: block;
+  width: 80%;
+  max-width: 40rem;
+  margin: 1.618rem auto;
+  font-size: 1.618rem;
+  line-height: 1.6;
+}
+
+ul {
+  display: block;
+  width: 80%;
+  max-width: 40rem;
+  margin: 1.618rem auto;
+  list-style: none;
+  font-size: 1.618rem;
+  line-height: 1.5;
+  padding: 0;
+}

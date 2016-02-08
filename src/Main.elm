@@ -143,19 +143,25 @@ view address model =
                 , value model.field
                 , onKeyDown address keyHandler
                 , on "input" targetValue (Signal.message address << UpdateField)
+                , class "input"
                 ]
                 []
             , ul
-                []
+                [ class "list" ]
                 (List.map (item address model) items)
             ]
 
 item : Address Action -> Model -> Item -> Html
 item address model item  =
     let fontWeight = if Just item.index == model.current then "bold" else "normal"
+        borderLeft = if Just item.index == model.current then ".6472rem solid #333" else ""
+        paddingLeft = if Just item.index == model.current then "1.294rem" else ""
     in
         li
-            [style [("font-weight", fontWeight)]]
+            [ style [ ("font-weight", fontWeight)
+                    , ("border-left", borderLeft)
+                    , ("padding-left", paddingLeft)
+            ]]
             [text item.desc]
 
 
@@ -192,9 +198,9 @@ actions =
 
 
 -- outgoing
-port modelLogger : Signal Model
-port modelLogger =
-    Signal.map (Debug.log "") model
+--port modelLogger : Signal Model
+--port modelLogger =
+    --Signal.map (Debug.log "") model
 
 
 -- interactions with localStorage to save the model
