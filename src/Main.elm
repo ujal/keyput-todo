@@ -18,16 +18,16 @@ import Time
 type alias Model =
     { field : String
     , items : List Item
-    , itemsIndex : Maybe Int
     , matchedItems : List Item
-    , matchedItemsIndex : Maybe Int
     , uid : Int
+    , current : Maybe Int
     }
 
 
 type alias Item =
     { desc : String
     , id : Int
+    , index : Int
     }
 
 
@@ -35,17 +35,17 @@ emptyModel : Model
 emptyModel =
     { field = ""
     , items = []
-    , itemsIndex = Just 0
     , matchedItems = []
-    , matchedItemsIndex = Nothing
     , uid = 0
+    , current = Nothing
     }
 
 
-newItem : String -> Int -> Item
-newItem desc id =
+newItem : String -> Int -> Int -> Item
+newItem desc id index =
     { desc = desc
     , id = id
+    , index = index
     }
 
 
@@ -54,7 +54,9 @@ newItem desc id =
 type Action
     = NoOp
     | UpdateField String
-    | Add
+    | Enter
+    | Down
+    | Up
 
 update : Action -> Model -> Model
 update action model =
@@ -68,7 +70,8 @@ update action model =
                         |> String.split " "
                         |> String.join ""
                         |> String.toList
-                        |> List.map (\c -> ".*" ++ (Regex.escape (String.fromChar c)))
+                        |> List.map
+                            (\c -> ".*" ++ (Regex.escape (String.fromChar c)))
                         |> String.join ""
                         |> Regex.regex
                         |> Regex.caseInsensitive
@@ -78,17 +81,47 @@ update action model =
                     matchedItems = matchedItems
                 }
 
-        Add ->
+        Enter ->
             let isMatch = not (List.isEmpty model.matchedItems)
                 isEmpty = String.isEmpty model.field
+                isItems = not (List.isEmpty model.items)
             in
                 { model |
-                    uid   = if isEmpty || isMatch then model.uid else model.uid + 1,
+                    uid = if isEmpty || isMatch then model.uid else model.uid + 1,
                     field = if isMatch then model.field else "",
+                    current = if not isEmpty || isMatch then Just 0 else Nothing,
                     items =
                         if isEmpty || isMatch
-                           then model.items
-                           else model.items ++ [newItem model.field model.uid]
+                        then model.items
+                        else model.items ++
+                            [newItem model.field model.uid model.uid]
+                }
+
+        Down ->
+            let isItems = not (List.isEmpty model.items)
+                isMatch = not (List.isEmpty model.matchedItems)
+                itemLength = List.length model.items
+                update m = Maybe.map2 (+) (Just 1) m
+                min m1 m2 = Maybe.map2 Basics.min m1 m2
+            in
+                {model |
+                    current =
+                        if isItems
+                        then min (Just (itemLength - 1)) (update model.current)
+                        else Nothing
+                }
+
+        Up ->
+            let isItems = not (List.isEmpty model.items)
+                isMatch = not (List.isEmpty model.matchedItems)
+                update m = (Maybe.map2 (+) (Just -1) m)
+                max m1 m2 = Maybe.map2 Basics.max m1 m2
+            in
+                {model |
+                    current =
+                        if isItems
+                        then max (Just 0) (update model.current)
+                        else Nothing
                 }
 
 
@@ -108,30 +141,31 @@ view address model =
             [ input
                 [ autofocus True
                 , value model.field
-                , onEnter address Add
+                , onKeyDown address keyHandler
                 , on "input" targetValue (Signal.message address << UpdateField)
                 ]
                 []
             , ul
                 []
-                (List.map (item address) items)
+                (List.map (item address model) items)
             ]
 
-item : Address Action -> Item -> Html
-item address item =
-    li [] [text item.desc]
+item : Address Action -> Model -> Item -> Html
+item address model item  =
+    let fontWeight = if Just item.index == model.current then "bold" else "normal"
+    in
+        li
+            [style [("font-weight", fontWeight)]]
+            [text item.desc]
 
 
-onEnter : Address a -> a -> Attribute
-onEnter address value =
-    on "keydown"
-      (Json.customDecoder keyCode is13)
-      (\_ -> Signal.message address value)
-
-
-is13 : Int -> Result String ()
-is13 code =
-  if code == 13 then Ok () else Err "not the right key code"
+keyHandler : Int -> Action
+keyHandler code =
+    case code of
+        13 -> Enter
+        40 -> Down
+        38 -> Up
+        _ -> NoOp
 
 
 -- INPUTS
@@ -158,9 +192,9 @@ actions =
 
 
 -- outgoing
---port modelLogger : Signal Model
---port modelLogger =
-    --Signal.map (Debug.log "") model
+port modelLogger : Signal Model
+port modelLogger =
+    Signal.map (Debug.log "") model
 
 
 -- interactions with localStorage to save the model
