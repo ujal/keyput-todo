@@ -20,7 +20,7 @@ type alias Model =
     , items : List Item
     , matchedItems : List Item
     , uid : Int
-    , current : Maybe Int
+    , index : Maybe Int
     }
 
 
@@ -37,7 +37,7 @@ emptyModel =
     , items = []
     , matchedItems = []
     , uid = 0
-    , current = Nothing
+    , index = Nothing
     }
 
 
@@ -64,7 +64,7 @@ update action model =
         NoOp -> model
 
         UpdateField str ->
-            let matchedItems  = List.filter contains model.items
+            let matchedItems = List.filter contains model.items
                 contains item = Regex.contains regex item.desc
                 regex = str
                         |> String.split " "
@@ -89,7 +89,7 @@ update action model =
                 { model |
                     uid = if isEmpty || isMatch then model.uid else model.uid + 1,
                     field = if isMatch then model.field else "",
-                    current = if not isEmpty || isMatch then Just 0 else Nothing,
+                    index = if not isEmpty || isMatch then Just 0 else Nothing,
                     items =
                         if isEmpty || isMatch
                         then model.items
@@ -105,9 +105,9 @@ update action model =
                 min m1 m2 = Maybe.map2 Basics.min m1 m2
             in
                 {model |
-                    current =
+                    index =
                         if isItems
-                        then min (Just (itemLength - 1)) (update model.current)
+                        then min (Just (itemLength - 1)) (update model.index)
                         else Nothing
                 }
 
@@ -118,9 +118,9 @@ update action model =
                 max m1 m2 = Maybe.map2 Basics.max m1 m2
             in
                 {model |
-                    current =
+                    index =
                         if isItems
-                        then max (Just 0) (update model.current)
+                        then max (Just 0) (update model.index)
                         else Nothing
                 }
 
@@ -153,9 +153,9 @@ view address model =
 
 item : Address Action -> Model -> Item -> Html
 item address model item  =
-    let fontWeight = if Just item.index == model.current then "bold" else "normal"
-        borderLeft = if Just item.index == model.current then ".6472rem solid #333" else ""
-        paddingLeft = if Just item.index == model.current then "1.294rem" else ""
+    let fontWeight = if Just item.index == model.index then "bold" else "normal"
+        borderLeft = if Just item.index == model.index then ".6472rem solid #333" else ""
+        paddingLeft = if Just item.index == model.index then "1.294rem" else ""
     in
         li
             [ style [ ("font-weight", fontWeight)
@@ -198,9 +198,9 @@ actions =
 
 
 -- outgoing
---port modelLogger : Signal Model
---port modelLogger =
-    --Signal.map (Debug.log "") model
+port modelLogger : Signal Model
+port modelLogger =
+    Signal.map (Debug.log "") model
 
 
 -- interactions with localStorage to save the model
