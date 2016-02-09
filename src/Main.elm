@@ -81,6 +81,10 @@ strEmpty : Model -> Bool
 strEmpty model = String.isEmpty model.string
 
 
+addNot : Model -> Bool
+addNot model = strEmpty model || isMatch model
+
+
 update : Action -> Model -> Model
 update action model =
     case action of
@@ -91,18 +95,11 @@ update action model =
 
         Enter ->
             { model |
-                uid =
-                    if strEmpty model || isMatch model then model.uid
-                    else model.uid + 1,
+                uid = if addNot model then model.uid else model.uid + 1,
                 string = if isMatch model then model.string else "",
-                index =
-                    if not (strEmpty model) || isMatch model then 0
-                    else 1,
                 items =
-                    if strEmpty model || isMatch model
-                    then model.items
-                    else model.items ++
-                        [newItem model.string model.uid model.uid]
+                    if addNot model then model.items
+                    else model.items ++ [newItem model.string model.uid model.uid]
                 }
         Up ->
             {model |

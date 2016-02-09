@@ -11071,6 +11071,7 @@ Elm.Main.make = function (_elm) {
       return A2($List.filter,contains,items);
    });
    var isMatch = function (model) {    return $Basics.not($List.isEmpty(A2(matches,model.string,model.items)));};
+   var addNot = function (model) {    return strEmpty(model) || isMatch(model);};
    var Down = {ctor: "Down"};
    var Up = {ctor: "Up"};
    var Enter = {ctor: "Enter"};
@@ -11098,12 +11099,9 @@ Elm.Main.make = function (_elm) {
       {case "NoOp": return model;
          case "UpdateString": return _U.update(model,{string: _p2._0});
          case "Enter": return _U.update(model,
-           {uid: strEmpty(model) || isMatch(model) ? model.uid : model.uid + 1
+           {uid: addNot(model) ? model.uid : model.uid + 1
            ,string: isMatch(model) ? model.string : ""
-           ,index: $Basics.not(strEmpty(model)) || isMatch(model) ? 0 : 1
-           ,items: strEmpty(model) || isMatch(model) ? model.items : A2($Basics._op["++"],
-           model.items,
-           _U.list([A3(newItem,model.string,model.uid,model.uid)]))});
+           ,items: addNot(model) ? model.items : A2($Basics._op["++"],model.items,_U.list([A3(newItem,model.string,model.uid,model.uid)]))});
          case "Up": return _U.update(model,{index: A2($Basics.max,model.index - 1,0)});
          default: return _U.update(model,{index: A2($Basics.min,model.index + 1,$List.length(model.items) - 1)});}
    });
@@ -11142,6 +11140,7 @@ Elm.Main.make = function (_elm) {
                              ,matches: matches
                              ,isMatch: isMatch
                              ,strEmpty: strEmpty
+                             ,addNot: addNot
                              ,update: update
                              ,view: view
                              ,item: item
