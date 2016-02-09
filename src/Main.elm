@@ -16,11 +16,10 @@ import Time
 -- MODEL
 
 type alias Model =
-    { field : String
+    { string : String
     , items : List Item
-    , matchedItems : List Item
     , uid : Int
-    , index : Maybe Int
+    , index : Int
     }
 
 
@@ -33,11 +32,10 @@ type alias Item =
 
 emptyModel : Model
 emptyModel =
-    { field = ""
+    { string = ""
     , items = []
-    , matchedItems = []
     , uid = 0
-    , index = Nothing
+    , index = 0
     }
 
 
@@ -53,96 +51,84 @@ newItem desc id index =
 
 type Action
     = NoOp
-    | UpdateField String
+    | UpdateString String
     | Enter
-    | Down
     | Up
+    | Down
+
+
+matches : String -> List Item -> List Item
+matches str items =
+    let contains item = Regex.contains regex item.desc
+        regex = str
+                |> String.split " "
+                |> String.join ""
+                |> String.toList
+                |> List.map
+                    (\c -> ".*" ++ (Regex.escape (String.fromChar c)))
+                |> String.join ""
+                |> Regex.regex
+                |> Regex.caseInsensitive
+    in
+        List.filter contains items
+
+
+isMatch : Model -> Bool
+isMatch model = not (List.isEmpty (matches model.string model.items))
+
+
+strEmpty : Model -> Bool
+strEmpty model = String.isEmpty model.string
+
 
 update : Action -> Model -> Model
 update action model =
     case action of
         NoOp -> model
 
-        UpdateField str ->
-            let matchedItems = List.filter contains model.items
-                contains item = Regex.contains regex item.desc
-                regex = str
-                        |> String.split " "
-                        |> String.join ""
-                        |> String.toList
-                        |> List.map
-                            (\c -> ".*" ++ (Regex.escape (String.fromChar c)))
-                        |> String.join ""
-                        |> Regex.regex
-                        |> Regex.caseInsensitive
-            in
-                { model |
-                    field = str,
-                    matchedItems = matchedItems
-                }
+        UpdateString str ->
+            { model | string = str }
 
         Enter ->
-            let isMatch = not (List.isEmpty model.matchedItems)
-                isEmpty = String.isEmpty model.field
-                isItems = not (List.isEmpty model.items)
-            in
-                { model |
-                    uid = if isEmpty || isMatch then model.uid else model.uid + 1,
-                    field = if isMatch then model.field else "",
-                    index = if not isEmpty || isMatch then Just 0 else Nothing,
-                    items =
-                        if isEmpty || isMatch
-                        then model.items
-                        else model.items ++
-                            [newItem model.field model.uid model.uid]
+            { model |
+                uid =
+                    if strEmpty model || isMatch model then model.uid
+                    else model.uid + 1,
+                string = if isMatch model then model.string else "",
+                index =
+                    if not (strEmpty model) || isMatch model then 0
+                    else 1,
+                items =
+                    if strEmpty model || isMatch model
+                    then model.items
+                    else model.items ++
+                        [newItem model.string model.uid model.uid]
                 }
-
-        Down ->
-            let isItems = not (List.isEmpty model.items)
-                isMatch = not (List.isEmpty model.matchedItems)
-                itemLength = List.length model.items
-                update m = Maybe.map2 (+) (Just 1) m
-                min m1 m2 = Maybe.map2 Basics.min m1 m2
-            in
-                {model |
-                    index =
-                        if isItems
-                        then min (Just (itemLength - 1)) (update model.index)
-                        else Nothing
-                }
-
         Up ->
-            let isItems = not (List.isEmpty model.items)
-                isMatch = not (List.isEmpty model.matchedItems)
-                update m = (Maybe.map2 (+) (Just -1) m)
-                max m1 m2 = Maybe.map2 Basics.max m1 m2
-            in
-                {model |
-                    index =
-                        if isItems
-                        then max (Just 0) (update model.index)
-                        else Nothing
-                }
+            {model |
+                index = Basics.max (model.index - 1) 0}
+        Down ->
+            {model |
+                index = Basics.min (model.index + 1) ((List.length model.items) - 1)}
+
 
 
 -- VIEW
 
 view : Address Action -> Model -> Html
 view address model =
-    let isMatch = not (List.isEmpty model.matchedItems)
-        isEmpty = String.isEmpty model.field
-        items =
-            if isMatch then model.matchedItems
-            else if isEmpty then model.items
-            else []
+    let items =
+            if isMatch model then
+                matches model.string model.items
+            else model.items
     in
         div
             []
             [ input
                 [ autofocus True
-                , value model.field
+                , value model.string
                 , onKeyDown address keyHandler
-                , on "input" targetValue (Signal.message address << UpdateField)
+                , on "input" targetValue (Signal.message address << UpdateString)
                 , class "input"
                 ]
                 []
@@ -153,9 +139,9 @@ view address model =
 
 item : Address Action -> Model -> Item -> Html
 item address model item  =
-    let fontWeight = if Just item.index == model.index then "bold" else "normal"
-        borderLeft = if Just item.index == model.index then ".6472rem solid #333" else ""
-        paddingLeft = if Just item.index == model.index then "1.294rem" else ""
+    let fontWeight = if item.index == model.index then "bold" else "normal"
+        borderLeft = if item.index == model.index then ".6472rem solid #333" else ""
+        paddingLeft = if item.index == model.index then "1.294rem" else ""
     in
         li
             [ style [ ("font-weight", fontWeight)
