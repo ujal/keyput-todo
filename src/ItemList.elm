@@ -1,4 +1,4 @@
-module Main where
+module ItemList (Model, init, Action, update, view) where
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -11,7 +11,7 @@ import Window
 import Http
 import Regex
 import Time
-import ItemList
+
 
 -- MODEL
 
@@ -20,7 +20,6 @@ type alias Model =
     , items : List Item
     , uid : Int
     , index : Int
-    , showActions : Bool
     }
 
 
@@ -31,13 +30,12 @@ type alias Item =
     }
 
 
-emptyModel : Model
-emptyModel =
+init : Model
+init =
     { string = ""
     , items = []
     , uid = 0
     , index = 0
-    , showActions = False
     }
 
 
@@ -57,7 +55,6 @@ type Action
     | Enter
     | Up
     | Down
-    | Esc
 
 
 matches : String -> List Item -> List Item
@@ -87,6 +84,7 @@ strEmpty model = String.isEmpty model.string
 addNot : Model -> Bool
 addNot model = strEmpty model || isMatch model
 
+
 update : Action -> Model -> Model
 update action model =
     case action of
@@ -104,33 +102,22 @@ update action model =
                 string = if isMatch model then model.string else "",
                 items =
                     if addNot model then model.items
-                    else model.items ++ [newItem model.string model.uid model.uid],
-                showActions =
-                    if addNot model then True
-                    else False
-            }
-
+                    else model.items ++ [newItem model.string model.uid model.uid]
+                }
         Up ->
-            { model |
-                index = Basics.max (model.index - 1) 0
-            }
-
+            {model |
+                index = Basics.max (model.index - 1) 0}
         Down ->
             let matchesLength = List.length (matches model.string model.items)
                 itemLength = List.length model.items
             in
-                { model |
+                {model |
                     index =
                         if isMatch model then
                             Basics.min (model.index + 1) (matchesLength - 1)
                         else
                             Basics.min (model.index + 1) (itemLength - 1)
                 }
-
-        Esc ->
-            { model |
-                showActions = False,
-                string = if model.showActions then model.string else ""}
 
 
 
@@ -161,15 +148,10 @@ view address model =
 
 item : Address Action -> Model -> Item -> Html
 item address model item  =
-    let fontWeight  = if selected then "bold" else "normal"
-        borderLeft  = if selected then ".6472rem solid #333" else ""
+    let fontWeight = if selected then "bold" else "normal"
+        borderLeft = if selected then ".6472rem solid #333" else ""
         paddingLeft = if selected then "1.294rem" else ""
         selected = item.index == model.index
-        actions =
-            if selected && model.showActions then
-                text "actions"
-            else
-                text ""
     in
         li
             [ style [ ("font-weight", fontWeight)
@@ -177,8 +159,7 @@ item address model item  =
                     , ("padding-left", paddingLeft)
                     ]
             ]
-            [ text item.desc
-            , div [] [actions]]
+            [text item.desc]
 
 
 keyHandler : Int -> Action
@@ -187,42 +168,4 @@ keyHandler code =
         13 -> Enter
         40 -> Down
         38 -> Up
-        27 -> Esc
         _ -> NoOp
-
-
--- INPUTS
-
--- manage our application over time
-main : Signal Html
-main =
-  Signal.map (view actions.address) model
-
-
-model : Signal Model
-model =
-  Signal.foldp update initialModel actions.signal
-
-initialModel : Model
-initialModel =
-  Maybe.withDefault emptyModel getStorage
-
-
--- actions from user input
-actions : Mailbox Action
-actions =
-  Signal.mailbox NoOp
-
-
--- outgoing
-port modelLogger : Signal Model
-port modelLogger =
-    Signal.map (Debug.log "") model
-
-
--- interactions with localStorage to save the model
-port getStorage : Maybe Model
-
-port setStorage : Signal Model
-port setStorage = model
-

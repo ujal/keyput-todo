@@ -11007,11 +11007,11 @@ Elm.Http.make = function (_elm) {
                              ,RawTimeout: RawTimeout
                              ,RawNetworkError: RawNetworkError};
 };
-Elm.Main = Elm.Main || {};
-Elm.Main.make = function (_elm) {
+Elm.ItemList = Elm.ItemList || {};
+Elm.ItemList.make = function (_elm) {
    "use strict";
-   _elm.Main = _elm.Main || {};
-   if (_elm.Main.values) return _elm.Main.values;
+   _elm.ItemList = _elm.ItemList || {};
+   if (_elm.ItemList.values) return _elm.ItemList.values;
    var _U = Elm.Native.Utils.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Debug = Elm.Debug.make(_elm),
@@ -11025,29 +11025,6 @@ Elm.Main.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm),
    $String = Elm.String.make(_elm);
    var _op = {};
-   var getStorage = Elm.Native.Port.make(_elm).inbound("getStorage",
-   "Maybe.Maybe Main.Model",
-   function (v) {
-      return v === null ? Elm.Maybe.make(_elm).Nothing : Elm.Maybe.make(_elm).Just(typeof v === "object" && "string" in v && "items" in v && "uid" in v && "index" in v ? {_: {}
-                                                                                                                                                                          ,string: typeof v.string === "string" || typeof v.string === "object" && v.string instanceof String ? v.string : _U.badPort("a string",
-                                                                                                                                                                          v.string)
-                                                                                                                                                                          ,items: typeof v.items === "object" && v.items instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.items.map(function (v) {
-                                                                                                                                                                             return typeof v === "object" && "desc" in v && "id" in v && "index" in v ? {_: {}
-                                                                                                                                                                                                                                                        ,desc: typeof v.desc === "string" || typeof v.desc === "object" && v.desc instanceof String ? v.desc : _U.badPort("a string",
-                                                                                                                                                                                                                                                        v.desc)
-                                                                                                                                                                                                                                                        ,id: typeof v.id === "number" && isFinite(v.id) && Math.floor(v.id) === v.id ? v.id : _U.badPort("an integer",
-                                                                                                                                                                                                                                                        v.id)
-                                                                                                                                                                                                                                                        ,index: typeof v.index === "number" && isFinite(v.index) && Math.floor(v.index) === v.index ? v.index : _U.badPort("an integer",
-                                                                                                                                                                                                                                                        v.index)} : _U.badPort("an object with fields `desc`, `id`, `index`",
-                                                                                                                                                                             v);
-                                                                                                                                                                          })) : _U.badPort("an array",
-                                                                                                                                                                          v.items)
-                                                                                                                                                                          ,uid: typeof v.uid === "number" && isFinite(v.uid) && Math.floor(v.uid) === v.uid ? v.uid : _U.badPort("an integer",
-                                                                                                                                                                          v.uid)
-                                                                                                                                                                          ,index: typeof v.index === "number" && isFinite(v.index) && Math.floor(v.index) === v.index ? v.index : _U.badPort("an integer",
-                                                                                                                                                                          v.index)} : _U.badPort("an object with fields `string`, `items`, `uid`, `index`",
-      v));
-   });
    var item = F3(function (address,model,item) {
       var selected = _U.eq(item.index,model.index);
       var paddingLeft = selected ? "1.294rem" : "";
@@ -11093,7 +11070,6 @@ Elm.Main.make = function (_elm) {
               _U.list([]))
               ,A2($Html.ul,_U.list([$Html$Attributes.$class("list")]),A2($List.map,A2(item,address,model),items))]));
    });
-   var actions = $Signal.mailbox(NoOp);
    var newItem = F3(function (desc,id,index) {    return {desc: desc,id: id,index: index};});
    var update = F2(function (action,model) {
       var _p2 = action;
@@ -11110,7 +11086,128 @@ Elm.Main.make = function (_elm) {
            return _U.update(model,
            {index: isMatch(model) ? A2($Basics.min,model.index + 1,matchesLength - 1) : A2($Basics.min,model.index + 1,itemLength - 1)});}
    });
-   var emptyModel = {string: "",items: _U.list([]),uid: 0,index: 0};
+   var init = {string: "",items: _U.list([]),uid: 0,index: 0};
+   var Item = F3(function (a,b,c) {    return {desc: a,id: b,index: c};});
+   var Model = F4(function (a,b,c,d) {    return {string: a,items: b,uid: c,index: d};});
+   return _elm.ItemList.values = {_op: _op,init: init,update: update,view: view,Model: Model};
+};
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values) return _elm.Main.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Regex = Elm.Regex.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm);
+   var _op = {};
+   var getStorage = Elm.Native.Port.make(_elm).inbound("getStorage",
+   "Maybe.Maybe Main.Model",
+   function (v) {
+      return v === null ? Elm.Maybe.make(_elm).Nothing : Elm.Maybe.make(_elm).Just(typeof v === "object" && "string" in v && "items" in v && "uid" in v && "index" in v && "showActions" in v ? {_: {}
+                                                                                                                                                                                                ,string: typeof v.string === "string" || typeof v.string === "object" && v.string instanceof String ? v.string : _U.badPort("a string",
+                                                                                                                                                                                                v.string)
+                                                                                                                                                                                                ,items: typeof v.items === "object" && v.items instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.items.map(function (v) {
+                                                                                                                                                                                                   return typeof v === "object" && "desc" in v && "id" in v && "index" in v ? {_: {}
+                                                                                                                                                                                                                                                                              ,desc: typeof v.desc === "string" || typeof v.desc === "object" && v.desc instanceof String ? v.desc : _U.badPort("a string",
+                                                                                                                                                                                                                                                                              v.desc)
+                                                                                                                                                                                                                                                                              ,id: typeof v.id === "number" && isFinite(v.id) && Math.floor(v.id) === v.id ? v.id : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                              v.id)
+                                                                                                                                                                                                                                                                              ,index: typeof v.index === "number" && isFinite(v.index) && Math.floor(v.index) === v.index ? v.index : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                              v.index)} : _U.badPort("an object with fields `desc`, `id`, `index`",
+                                                                                                                                                                                                   v);
+                                                                                                                                                                                                })) : _U.badPort("an array",
+                                                                                                                                                                                                v.items)
+                                                                                                                                                                                                ,uid: typeof v.uid === "number" && isFinite(v.uid) && Math.floor(v.uid) === v.uid ? v.uid : _U.badPort("an integer",
+                                                                                                                                                                                                v.uid)
+                                                                                                                                                                                                ,index: typeof v.index === "number" && isFinite(v.index) && Math.floor(v.index) === v.index ? v.index : _U.badPort("an integer",
+                                                                                                                                                                                                v.index)
+                                                                                                                                                                                                ,showActions: typeof v.showActions === "boolean" ? v.showActions : _U.badPort("a boolean (true or false)",
+                                                                                                                                                                                                v.showActions)} : _U.badPort("an object with fields `string`, `items`, `uid`, `index`, `showActions`",
+      v));
+   });
+   var item = F3(function (address,model,item) {
+      var selected = _U.eq(item.index,model.index);
+      var actions = selected && model.showActions ? $Html.text("actions") : $Html.text("");
+      var paddingLeft = selected ? "1.294rem" : "";
+      var borderLeft = selected ? ".6472rem solid #333" : "";
+      var fontWeight = selected ? "bold" : "normal";
+      return A2($Html.li,
+      _U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "font-weight",_1: fontWeight}
+                                              ,{ctor: "_Tuple2",_0: "border-left",_1: borderLeft}
+                                              ,{ctor: "_Tuple2",_0: "padding-left",_1: paddingLeft}]))]),
+      _U.list([$Html.text(item.desc),A2($Html.div,_U.list([]),_U.list([actions]))]));
+   });
+   var strEmpty = function (model) {    return $String.isEmpty(model.string);};
+   var matches = F2(function (str,items) {
+      var regex = $Regex.caseInsensitive($Regex.regex(A2($String.join,
+      "",
+      A2($List.map,
+      function (c) {
+         return A2($Basics._op["++"],".*",$Regex.escape($String.fromChar(c)));
+      },
+      $String.toList(A2($String.join,"",A2($String.split," ",str)))))));
+      var contains = function (item) {    return A2($Regex.contains,regex,item.desc);};
+      return A2($List.filter,contains,items);
+   });
+   var isMatch = function (model) {    return $Basics.not($List.isEmpty(A2(matches,model.string,model.items)));};
+   var addNot = function (model) {    return strEmpty(model) || isMatch(model);};
+   var Esc = {ctor: "Esc"};
+   var Down = {ctor: "Down"};
+   var Up = {ctor: "Up"};
+   var Enter = {ctor: "Enter"};
+   var UpdateString = function (a) {    return {ctor: "UpdateString",_0: a};};
+   var NoOp = {ctor: "NoOp"};
+   var keyHandler = function (code) {
+      var _p0 = code;
+      switch (_p0)
+      {case 13: return Enter;
+         case 40: return Down;
+         case 38: return Up;
+         case 27: return Esc;
+         default: return NoOp;}
+   };
+   var view = F2(function (address,model) {
+      var update = F2(function (i,item) {    return _U.update(item,{index: i});});
+      var items = isMatch(model) ? A2($List.indexedMap,update,A2(matches,model.string,model.items)) : _U.list([]);
+      return A2($Html.div,
+      _U.list([]),
+      _U.list([A2($Html.input,
+              _U.list([$Html$Attributes.autofocus(true)
+                      ,$Html$Attributes.value(model.string)
+                      ,A2($Html$Events.onKeyDown,address,keyHandler)
+                      ,A3($Html$Events.on,"input",$Html$Events.targetValue,function (_p1) {    return A2($Signal.message,address,UpdateString(_p1));})
+                      ,$Html$Attributes.$class("input")]),
+              _U.list([]))
+              ,A2($Html.ul,_U.list([$Html$Attributes.$class("list")]),A2($List.map,A2(item,address,model),items))]));
+   });
+   var actions = $Signal.mailbox(NoOp);
+   var newItem = F3(function (desc,id,index) {    return {desc: desc,id: id,index: index};});
+   var update = F2(function (action,model) {
+      var _p2 = action;
+      switch (_p2.ctor)
+      {case "NoOp": return model;
+         case "UpdateString": return _U.update(model,{string: _p2._0,index: isMatch(model) ? 0 : model.index});
+         case "Enter": return _U.update(model,
+           {uid: addNot(model) ? model.uid : model.uid + 1
+           ,string: isMatch(model) ? model.string : ""
+           ,items: addNot(model) ? model.items : A2($Basics._op["++"],model.items,_U.list([A3(newItem,model.string,model.uid,model.uid)]))
+           ,showActions: addNot(model) ? true : false});
+         case "Up": return _U.update(model,{index: A2($Basics.max,model.index - 1,0)});
+         case "Down": var itemLength = $List.length(model.items);
+           var matchesLength = $List.length(A2(matches,model.string,model.items));
+           return _U.update(model,{index: isMatch(model) ? A2($Basics.min,model.index + 1,matchesLength - 1) : A2($Basics.min,model.index + 1,itemLength - 1)});
+         default: return _U.update(model,{showActions: false,string: model.showActions ? model.string : ""});}
+   });
+   var emptyModel = {string: "",items: _U.list([]),uid: 0,index: 0,showActions: false};
    var initialModel = A2($Maybe.withDefault,emptyModel,getStorage);
    var model = A3($Signal.foldp,update,initialModel,actions.signal);
    var main = A2($Signal.map,view(actions.address),model);
@@ -11119,7 +11216,8 @@ Elm.Main.make = function (_elm) {
       return {string: v.string
              ,items: Elm.Native.List.make(_elm).toArray(v.items).map(function (v) {    return {desc: v.desc,id: v.id,index: v.index};})
              ,uid: v.uid
-             ,index: v.index};
+             ,index: v.index
+             ,showActions: v.showActions};
    },
    A2($Signal.map,$Debug.log(""),model));
    var setStorage = Elm.Native.Port.make(_elm).outboundSignal("setStorage",
@@ -11127,11 +11225,12 @@ Elm.Main.make = function (_elm) {
       return {string: v.string
              ,items: Elm.Native.List.make(_elm).toArray(v.items).map(function (v) {    return {desc: v.desc,id: v.id,index: v.index};})
              ,uid: v.uid
-             ,index: v.index};
+             ,index: v.index
+             ,showActions: v.showActions};
    },
    model);
    var Item = F3(function (a,b,c) {    return {desc: a,id: b,index: c};});
-   var Model = F4(function (a,b,c,d) {    return {string: a,items: b,uid: c,index: d};});
+   var Model = F5(function (a,b,c,d,e) {    return {string: a,items: b,uid: c,index: d,showActions: e};});
    return _elm.Main.values = {_op: _op
                              ,Model: Model
                              ,Item: Item
@@ -11142,6 +11241,7 @@ Elm.Main.make = function (_elm) {
                              ,Enter: Enter
                              ,Up: Up
                              ,Down: Down
+                             ,Esc: Esc
                              ,matches: matches
                              ,isMatch: isMatch
                              ,strEmpty: strEmpty
