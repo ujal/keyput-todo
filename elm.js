@@ -11049,9 +11049,10 @@ Elm.Main.make = function (_elm) {
       v));
    });
    var item = F3(function (address,model,item) {
-      var paddingLeft = _U.eq(item.index,model.index) ? "1.294rem" : "";
-      var borderLeft = _U.eq(item.index,model.index) ? ".6472rem solid #333" : "";
-      var fontWeight = _U.eq(item.index,model.index) ? "bold" : "normal";
+      var selected = _U.eq(item.index,model.index);
+      var paddingLeft = selected ? "1.294rem" : "";
+      var borderLeft = selected ? ".6472rem solid #333" : "";
+      var fontWeight = selected ? "bold" : "normal";
       return A2($Html.li,
       _U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "font-weight",_1: fontWeight}
                                               ,{ctor: "_Tuple2",_0: "border-left",_1: borderLeft}
@@ -11079,7 +11080,8 @@ Elm.Main.make = function (_elm) {
    var NoOp = {ctor: "NoOp"};
    var keyHandler = function (code) {    var _p0 = code;switch (_p0) {case 13: return Enter;case 40: return Down;case 38: return Up;default: return NoOp;}};
    var view = F2(function (address,model) {
-      var items = isMatch(model) ? A2(matches,model.string,model.items) : model.items;
+      var update = F2(function (i,item) {    return _U.update(item,{index: i});});
+      var items = isMatch(model) ? A2($List.indexedMap,update,A2(matches,model.string,model.items)) : _U.list([]);
       return A2($Html.div,
       _U.list([]),
       _U.list([A2($Html.input,
@@ -11097,13 +11099,16 @@ Elm.Main.make = function (_elm) {
       var _p2 = action;
       switch (_p2.ctor)
       {case "NoOp": return model;
-         case "UpdateString": return _U.update(model,{string: _p2._0});
+         case "UpdateString": return _U.update(model,{string: _p2._0,index: isMatch(model) ? 0 : model.index});
          case "Enter": return _U.update(model,
            {uid: addNot(model) ? model.uid : model.uid + 1
            ,string: isMatch(model) ? model.string : ""
            ,items: addNot(model) ? model.items : A2($Basics._op["++"],model.items,_U.list([A3(newItem,model.string,model.uid,model.uid)]))});
          case "Up": return _U.update(model,{index: A2($Basics.max,model.index - 1,0)});
-         default: return _U.update(model,{index: A2($Basics.min,model.index + 1,$List.length(model.items) - 1)});}
+         default: var itemLength = $List.length(model.items);
+           var matchesLength = $List.length(A2(matches,model.string,model.items));
+           return _U.update(model,
+           {index: isMatch(model) ? A2($Basics.min,model.index + 1,matchesLength - 1) : A2($Basics.min,model.index + 1,itemLength - 1)});}
    });
    var emptyModel = {string: "",items: _U.list([]),uid: 0,index: 0};
    var initialModel = A2($Maybe.withDefault,emptyModel,getStorage);

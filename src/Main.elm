@@ -91,7 +91,10 @@ update action model =
         NoOp -> model
 
         UpdateString str ->
-            { model | string = str }
+            { model |
+                string = str,
+                index = if isMatch model then 0 else model.index
+            }
 
         Enter ->
             { model |
@@ -105,8 +108,16 @@ update action model =
             {model |
                 index = Basics.max (model.index - 1) 0}
         Down ->
-            {model |
-                index = Basics.min (model.index + 1) ((List.length model.items) - 1)}
+            let matchesLength = List.length (matches model.string model.items)
+                itemLength = List.length model.items 
+            in
+                {model |
+                    index =
+                        if isMatch model then
+                            Basics.min (model.index + 1) (matchesLength - 1)
+                        else
+                            Basics.min (model.index + 1) (itemLength - 1)
+                }
 
 
 
@@ -116,8 +127,9 @@ view : Address Action -> Model -> Html
 view address model =
     let items =
             if isMatch model then
-                matches model.string model.items
-            else model.items
+                List.indexedMap update (matches model.string model.items)
+            else []
+        update i item = { item | index = i }
     in
         div
             []
@@ -136,15 +148,17 @@ view address model =
 
 item : Address Action -> Model -> Item -> Html
 item address model item  =
-    let fontWeight = if item.index == model.index then "bold" else "normal"
-        borderLeft = if item.index == model.index then ".6472rem solid #333" else ""
-        paddingLeft = if item.index == model.index then "1.294rem" else ""
+    let fontWeight = if selected then "bold" else "normal"
+        borderLeft = if selected then ".6472rem solid #333" else ""
+        paddingLeft = if selected then "1.294rem" else ""
+        selected = item.index == model.index
     in
         li
             [ style [ ("font-weight", fontWeight)
                     , ("border-left", borderLeft)
                     , ("padding-left", paddingLeft)
-            ]]
+                    ]
+            ]
             [text item.desc]
 
 
