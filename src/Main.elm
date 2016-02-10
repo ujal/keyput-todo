@@ -103,10 +103,12 @@ update action model =
                 items =
                     if addNot model then model.items
                     else model.items ++ [newItem model.string model.uid model.uid]
-                }
+            }
+
         Up ->
             {model |
                 index = Basics.max (model.index - 1) 0}
+
         Down ->
             let matchesLength = List.length (matches model.string model.items)
                 itemLength = List.length model.items
@@ -148,8 +150,8 @@ view address model =
 
 item : Address Action -> Model -> Item -> Html
 item address model item  =
-    let fontWeight = if selected then "bold" else "normal"
-        borderLeft = if selected then ".6472rem solid #333" else ""
+    let fontWeight  = if selected then "bold" else "normal"
+        borderLeft  = if selected then ".6472rem solid #333" else ""
         paddingLeft = if selected then "1.294rem" else ""
         selected = item.index == model.index
     in
