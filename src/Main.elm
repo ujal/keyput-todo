@@ -109,7 +109,7 @@ update action model =
                 index = Basics.max (model.index - 1) 0}
         Down ->
             let matchesLength = List.length (matches model.string model.items)
-                itemLength = List.length model.items 
+                itemLength = List.length model.items
             in
                 {model |
                     index =
