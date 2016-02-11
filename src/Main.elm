@@ -28,6 +28,7 @@ type alias Item =
     { desc : String
     , id : Int
     , index : Int
+    , actions : ItemList.Model
     }
 
 
@@ -46,6 +47,7 @@ newItem desc id index =
     { desc = desc
     , id = id
     , index = index
+    , actions = ItemList.init
     }
 
 
@@ -58,6 +60,7 @@ type Action
     | Up
     | Down
     | Esc
+    | ItemList ItemList.Action
 
 
 matches : String -> List Item -> List Item
@@ -86,6 +89,7 @@ strEmpty model = String.isEmpty model.string
 
 addNot : Model -> Bool
 addNot model = strEmpty model || isMatch model
+
 
 update : Action -> Model -> Model
 update action model =
@@ -132,6 +136,14 @@ update action model =
                 showActions = False,
                 string = if model.showActions then model.string else ""}
 
+        ItemList act ->
+            let update item =
+                    if item.index == model.index then
+                        { item | actions = ItemList.update act item.actions }
+                    else item
+            in
+                { model | items = List.map update model.items}
+
 
 
 -- VIEW
@@ -167,7 +179,7 @@ item address model item  =
         selected = item.index == model.index
         actions =
             if selected && model.showActions then
-                text "actions"
+                ItemList.view (Signal.forwardTo address ItemList) item.actions
             else
                 text ""
     in
@@ -178,7 +190,7 @@ item address model item  =
                     ]
             ]
             [ text item.desc
-            , div [] [actions]]
+            , div [] [ actions ]]
 
 
 keyHandler : Int -> Action

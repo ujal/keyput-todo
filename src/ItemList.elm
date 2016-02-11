@@ -33,10 +33,17 @@ type alias Item =
 init : Model
 init =
     { string = ""
-    , items = []
+    , items = items
     , uid = 0
     , index = 0
     }
+
+
+items : List Item
+items =
+    [ newItem "Done" 0 0
+    , newItem "Remove" 1 1
+    ]
 
 
 newItem : String -> Int -> Int -> Item
@@ -132,7 +139,7 @@ view address model =
         update i item = { item | index = i }
     in
         div
-            []
+            [ class "actions" ]
             [ input
                 [ autofocus True
                 , value model.string

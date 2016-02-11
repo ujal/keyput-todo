@@ -8,18 +8,29 @@ html, body {
   display: block;
   width: 80%;
   max-width: 40rem;
-  margin: 1.618rem auto;
+  margin: 2.5888rem auto;
   font-size: 1.618rem;
   line-height: 1.6;
+}
+
+.actions input {
+  margin: 1.2rem 0 1.2rem;
+  font-size: 1.2rem;
+  width: 50%;
 }
 
 ul {
   display: block;
   width: 80%;
   max-width: 40rem;
-  margin: 1.618rem auto;
+  margin: 2.5888rem auto;
   list-style: none;
   font-size: 1.618rem;
   line-height: 1.5;
   padding: 0;
+}
+
+.actions ul {
+  margin: 1.618rem 0;
+  font-size: 1.2rem;
 }

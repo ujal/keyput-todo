@@ -11060,7 +11060,7 @@ Elm.ItemList.make = function (_elm) {
       var update = F2(function (i,item) {    return _U.update(item,{index: i});});
       var items = isMatch(model) ? A2($List.indexedMap,update,A2(matches,model.string,model.items)) : _U.list([]);
       return A2($Html.div,
-      _U.list([]),
+      _U.list([$Html$Attributes.$class("actions")]),
       _U.list([A2($Html.input,
               _U.list([$Html$Attributes.autofocus(true)
                       ,$Html$Attributes.value(model.string)
@@ -11086,7 +11086,8 @@ Elm.ItemList.make = function (_elm) {
            return _U.update(model,
            {index: isMatch(model) ? A2($Basics.min,model.index + 1,matchesLength - 1) : A2($Basics.min,model.index + 1,itemLength - 1)});}
    });
-   var init = {string: "",items: _U.list([]),uid: 0,index: 0};
+   var items = _U.list([A3(newItem,"Done",0,0),A3(newItem,"Remove",1,1)]);
+   var init = {string: "",items: items,uid: 0,index: 0};
    var Item = F3(function (a,b,c) {    return {desc: a,id: b,index: c};});
    var Model = F4(function (a,b,c,d) {    return {string: a,items: b,uid: c,index: d};});
    return _elm.ItemList.values = {_op: _op,init: init,update: update,view: view,Model: Model};
@@ -11102,6 +11103,7 @@ Elm.Main.make = function (_elm) {
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
+   $ItemList = Elm.ItemList.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Regex = Elm.Regex.make(_elm),
@@ -11116,13 +11118,32 @@ Elm.Main.make = function (_elm) {
                                                                                                                                                                                                 ,string: typeof v.string === "string" || typeof v.string === "object" && v.string instanceof String ? v.string : _U.badPort("a string",
                                                                                                                                                                                                 v.string)
                                                                                                                                                                                                 ,items: typeof v.items === "object" && v.items instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.items.map(function (v) {
-                                                                                                                                                                                                   return typeof v === "object" && "desc" in v && "id" in v && "index" in v ? {_: {}
-                                                                                                                                                                                                                                                                              ,desc: typeof v.desc === "string" || typeof v.desc === "object" && v.desc instanceof String ? v.desc : _U.badPort("a string",
-                                                                                                                                                                                                                                                                              v.desc)
-                                                                                                                                                                                                                                                                              ,id: typeof v.id === "number" && isFinite(v.id) && Math.floor(v.id) === v.id ? v.id : _U.badPort("an integer",
-                                                                                                                                                                                                                                                                              v.id)
-                                                                                                                                                                                                                                                                              ,index: typeof v.index === "number" && isFinite(v.index) && Math.floor(v.index) === v.index ? v.index : _U.badPort("an integer",
-                                                                                                                                                                                                                                                                              v.index)} : _U.badPort("an object with fields `desc`, `id`, `index`",
+                                                                                                                                                                                                   return typeof v === "object" && "desc" in v && "id" in v && "index" in v && "actions" in v ? {_: {}
+                                                                                                                                                                                                                                                                                                ,desc: typeof v.desc === "string" || typeof v.desc === "object" && v.desc instanceof String ? v.desc : _U.badPort("a string",
+                                                                                                                                                                                                                                                                                                v.desc)
+                                                                                                                                                                                                                                                                                                ,id: typeof v.id === "number" && isFinite(v.id) && Math.floor(v.id) === v.id ? v.id : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                                                v.id)
+                                                                                                                                                                                                                                                                                                ,index: typeof v.index === "number" && isFinite(v.index) && Math.floor(v.index) === v.index ? v.index : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                                                v.index)
+                                                                                                                                                                                                                                                                                                ,actions: typeof v.actions === "object" && "string" in v.actions && "items" in v.actions && "uid" in v.actions && "index" in v.actions ? {_: {}
+                                                                                                                                                                                                                                                                                                                                                                                                                                         ,string: typeof v.actions.string === "string" || typeof v.actions.string === "object" && v.actions.string instanceof String ? v.actions.string : _U.badPort("a string",
+                                                                                                                                                                                                                                                                                                                                                                                                                                         v.actions.string)
+                                                                                                                                                                                                                                                                                                                                                                                                                                         ,items: typeof v.actions.items === "object" && v.actions.items instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.actions.items.map(function (v) {
+                                                                                                                                                                                                                                                                                                                                                                                                                                            return typeof v === "object" && "desc" in v && "id" in v && "index" in v ? {_: {}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ,desc: typeof v.desc === "string" || typeof v.desc === "object" && v.desc instanceof String ? v.desc : _U.badPort("a string",
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       v.desc)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ,id: typeof v.id === "number" && isFinite(v.id) && Math.floor(v.id) === v.id ? v.id : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       v.id)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ,index: typeof v.index === "number" && isFinite(v.index) && Math.floor(v.index) === v.index ? v.index : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       v.index)} : _U.badPort("an object with fields `desc`, `id`, `index`",
+                                                                                                                                                                                                                                                                                                                                                                                                                                            v);
+                                                                                                                                                                                                                                                                                                                                                                                                                                         })) : _U.badPort("an array",
+                                                                                                                                                                                                                                                                                                                                                                                                                                         v.actions.items)
+                                                                                                                                                                                                                                                                                                                                                                                                                                         ,uid: typeof v.actions.uid === "number" && isFinite(v.actions.uid) && Math.floor(v.actions.uid) === v.actions.uid ? v.actions.uid : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                                                                                                                                                                                         v.actions.uid)
+                                                                                                                                                                                                                                                                                                                                                                                                                                         ,index: typeof v.actions.index === "number" && isFinite(v.actions.index) && Math.floor(v.actions.index) === v.actions.index ? v.actions.index : _U.badPort("an integer",
+                                                                                                                                                                                                                                                                                                                                                                                                                                         v.actions.index)} : _U.badPort("an object with fields `string`, `items`, `uid`, `index`",
+                                                                                                                                                                                                                                                                                                v.actions)} : _U.badPort("an object with fields `desc`, `id`, `index`, `actions`",
                                                                                                                                                                                                    v);
                                                                                                                                                                                                 })) : _U.badPort("an array",
                                                                                                                                                                                                 v.items)
@@ -11133,18 +11154,6 @@ Elm.Main.make = function (_elm) {
                                                                                                                                                                                                 ,showActions: typeof v.showActions === "boolean" ? v.showActions : _U.badPort("a boolean (true or false)",
                                                                                                                                                                                                 v.showActions)} : _U.badPort("an object with fields `string`, `items`, `uid`, `index`, `showActions`",
       v));
-   });
-   var item = F3(function (address,model,item) {
-      var selected = _U.eq(item.index,model.index);
-      var actions = selected && model.showActions ? $Html.text("actions") : $Html.text("");
-      var paddingLeft = selected ? "1.294rem" : "";
-      var borderLeft = selected ? ".6472rem solid #333" : "";
-      var fontWeight = selected ? "bold" : "normal";
-      return A2($Html.li,
-      _U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "font-weight",_1: fontWeight}
-                                              ,{ctor: "_Tuple2",_0: "border-left",_1: borderLeft}
-                                              ,{ctor: "_Tuple2",_0: "padding-left",_1: paddingLeft}]))]),
-      _U.list([$Html.text(item.desc),A2($Html.div,_U.list([]),_U.list([actions]))]));
    });
    var strEmpty = function (model) {    return $String.isEmpty(model.string);};
    var matches = F2(function (str,items) {
@@ -11160,6 +11169,19 @@ Elm.Main.make = function (_elm) {
    });
    var isMatch = function (model) {    return $Basics.not($List.isEmpty(A2(matches,model.string,model.items)));};
    var addNot = function (model) {    return strEmpty(model) || isMatch(model);};
+   var ItemList = function (a) {    return {ctor: "ItemList",_0: a};};
+   var item = F3(function (address,model,item) {
+      var selected = _U.eq(item.index,model.index);
+      var actions = selected && model.showActions ? A2($ItemList.view,A2($Signal.forwardTo,address,ItemList),item.actions) : $Html.text("");
+      var paddingLeft = selected ? "1.294rem" : "";
+      var borderLeft = selected ? ".6472rem solid #333" : "";
+      var fontWeight = selected ? "bold" : "normal";
+      return A2($Html.li,
+      _U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "font-weight",_1: fontWeight}
+                                              ,{ctor: "_Tuple2",_0: "border-left",_1: borderLeft}
+                                              ,{ctor: "_Tuple2",_0: "padding-left",_1: paddingLeft}]))]),
+      _U.list([$Html.text(item.desc),A2($Html.div,_U.list([]),_U.list([actions]))]));
+   });
    var Esc = {ctor: "Esc"};
    var Down = {ctor: "Down"};
    var Up = {ctor: "Up"};
@@ -11190,7 +11212,7 @@ Elm.Main.make = function (_elm) {
               ,A2($Html.ul,_U.list([$Html$Attributes.$class("list")]),A2($List.map,A2(item,address,model),items))]));
    });
    var actions = $Signal.mailbox(NoOp);
-   var newItem = F3(function (desc,id,index) {    return {desc: desc,id: id,index: index};});
+   var newItem = F3(function (desc,id,index) {    return {desc: desc,id: id,index: index,actions: $ItemList.init};});
    var update = F2(function (action,model) {
       var _p2 = action;
       switch (_p2.ctor)
@@ -11205,7 +11227,11 @@ Elm.Main.make = function (_elm) {
          case "Down": var itemLength = $List.length(model.items);
            var matchesLength = $List.length(A2(matches,model.string,model.items));
            return _U.update(model,{index: isMatch(model) ? A2($Basics.min,model.index + 1,matchesLength - 1) : A2($Basics.min,model.index + 1,itemLength - 1)});
-         default: return _U.update(model,{showActions: false,string: model.showActions ? model.string : ""});}
+         case "Esc": return _U.update(model,{showActions: false,string: model.showActions ? model.string : ""});
+         default: var update = function (item) {
+              return _U.eq(item.index,model.index) ? _U.update(item,{actions: A2($ItemList.update,_p2._0,item.actions)}) : item;
+           };
+           return _U.update(model,{items: A2($List.map,update,model.items)});}
    });
    var init = {string: "",items: _U.list([]),uid: 0,index: 0,showActions: false};
    var initialModel = A2($Maybe.withDefault,init,getStorage);
@@ -11214,7 +11240,17 @@ Elm.Main.make = function (_elm) {
    var modelLogger = Elm.Native.Port.make(_elm).outboundSignal("modelLogger",
    function (v) {
       return {string: v.string
-             ,items: Elm.Native.List.make(_elm).toArray(v.items).map(function (v) {    return {desc: v.desc,id: v.id,index: v.index};})
+             ,items: Elm.Native.List.make(_elm).toArray(v.items).map(function (v) {
+                return {desc: v.desc
+                       ,id: v.id
+                       ,index: v.index
+                       ,actions: {string: v.actions.string
+                                 ,items: Elm.Native.List.make(_elm).toArray(v.actions.items).map(function (v) {
+                                    return {desc: v.desc,id: v.id,index: v.index};
+                                 })
+                                 ,uid: v.actions.uid
+                                 ,index: v.actions.index}};
+             })
              ,uid: v.uid
              ,index: v.index
              ,showActions: v.showActions};
@@ -11223,13 +11259,23 @@ Elm.Main.make = function (_elm) {
    var setStorage = Elm.Native.Port.make(_elm).outboundSignal("setStorage",
    function (v) {
       return {string: v.string
-             ,items: Elm.Native.List.make(_elm).toArray(v.items).map(function (v) {    return {desc: v.desc,id: v.id,index: v.index};})
+             ,items: Elm.Native.List.make(_elm).toArray(v.items).map(function (v) {
+                return {desc: v.desc
+                       ,id: v.id
+                       ,index: v.index
+                       ,actions: {string: v.actions.string
+                                 ,items: Elm.Native.List.make(_elm).toArray(v.actions.items).map(function (v) {
+                                    return {desc: v.desc,id: v.id,index: v.index};
+                                 })
+                                 ,uid: v.actions.uid
+                                 ,index: v.actions.index}};
+             })
              ,uid: v.uid
              ,index: v.index
              ,showActions: v.showActions};
    },
    model);
-   var Item = F3(function (a,b,c) {    return {desc: a,id: b,index: c};});
+   var Item = F4(function (a,b,c,d) {    return {desc: a,id: b,index: c,actions: d};});
    var Model = F5(function (a,b,c,d,e) {    return {string: a,items: b,uid: c,index: d,showActions: e};});
    return _elm.Main.values = {_op: _op
                              ,Model: Model
@@ -11242,6 +11288,7 @@ Elm.Main.make = function (_elm) {
                              ,Up: Up
                              ,Down: Down
                              ,Esc: Esc
+                             ,ItemList: ItemList
                              ,matches: matches
                              ,isMatch: isMatch
                              ,strEmpty: strEmpty
