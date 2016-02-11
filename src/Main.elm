@@ -31,8 +31,8 @@ type alias Item =
     }
 
 
-emptyModel : Model
-emptyModel =
+init : Model
+init =
     { string = ""
     , items = []
     , uid = 0
@@ -205,7 +205,7 @@ model =
 
 initialModel : Model
 initialModel =
-  Maybe.withDefault emptyModel getStorage
+  Maybe.withDefault init getStorage
 
 
 -- actions from user input

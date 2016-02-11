@@ -11207,8 +11207,8 @@ Elm.Main.make = function (_elm) {
            return _U.update(model,{index: isMatch(model) ? A2($Basics.min,model.index + 1,matchesLength - 1) : A2($Basics.min,model.index + 1,itemLength - 1)});
          default: return _U.update(model,{showActions: false,string: model.showActions ? model.string : ""});}
    });
-   var emptyModel = {string: "",items: _U.list([]),uid: 0,index: 0,showActions: false};
-   var initialModel = A2($Maybe.withDefault,emptyModel,getStorage);
+   var init = {string: "",items: _U.list([]),uid: 0,index: 0,showActions: false};
+   var initialModel = A2($Maybe.withDefault,init,getStorage);
    var model = A3($Signal.foldp,update,initialModel,actions.signal);
    var main = A2($Signal.map,view(actions.address),model);
    var modelLogger = Elm.Native.Port.make(_elm).outboundSignal("modelLogger",
@@ -11234,7 +11234,7 @@ Elm.Main.make = function (_elm) {
    return _elm.Main.values = {_op: _op
                              ,Model: Model
                              ,Item: Item
-                             ,emptyModel: emptyModel
+                             ,init: init
                              ,newItem: newItem
                              ,NoOp: NoOp
                              ,UpdateString: UpdateString
