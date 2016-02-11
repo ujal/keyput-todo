@@ -62,6 +62,7 @@ type Action
     | Enter
     | Up
     | Down
+    | Esc
 
 
 matches : String -> List Item -> List Item
@@ -112,13 +113,14 @@ update action model =
                     else model.items ++ [newItem model.string model.uid model.uid]
                 }
         Up ->
-            {model |
-                index = Basics.max (model.index - 1) 0}
+            { model |
+                index = Basics.max (model.index - 1) 0
+            }
         Down ->
             let matchesLength = List.length (matches model.string model.items)
                 itemLength = List.length model.items
             in
-                {model |
+                { model |
                     index =
                         if isMatch model then
                             Basics.min (model.index + 1) (matchesLength - 1)
@@ -126,12 +128,15 @@ update action model =
                             Basics.min (model.index + 1) (itemLength - 1)
                 }
 
+        Esc ->
+            { model | index = 0}
+
 
 
 -- VIEW
 
-view : Address Action -> Model -> Int -> Html
-view address model uid =
+view : Address Action -> Model -> Html
+view address model =
     let items =
             if isMatch model then
                 List.indexedMap update (matches model.string model.items)
@@ -175,4 +180,5 @@ keyHandler code =
         13 -> Enter
         40 -> Down
         38 -> Up
+        27 -> Esc
         _ -> NoOp

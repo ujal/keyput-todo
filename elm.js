@@ -11050,13 +11050,22 @@ Elm.ItemList.make = function (_elm) {
    });
    var isMatch = function (model) {    return $Basics.not($List.isEmpty(A2(matches,model.string,model.items)));};
    var addNot = function (model) {    return strEmpty(model) || isMatch(model);};
+   var Esc = {ctor: "Esc"};
    var Down = {ctor: "Down"};
    var Up = {ctor: "Up"};
    var Enter = {ctor: "Enter"};
    var UpdateString = function (a) {    return {ctor: "UpdateString",_0: a};};
    var NoOp = {ctor: "NoOp"};
-   var keyHandler = function (code) {    var _p0 = code;switch (_p0) {case 13: return Enter;case 40: return Down;case 38: return Up;default: return NoOp;}};
-   var view = F3(function (address,model,uid) {
+   var keyHandler = function (code) {
+      var _p0 = code;
+      switch (_p0)
+      {case 13: return Enter;
+         case 40: return Down;
+         case 38: return Up;
+         case 27: return Esc;
+         default: return NoOp;}
+   };
+   var view = F2(function (address,model) {
       var update = F2(function (i,item) {    return _U.update(item,{index: i});});
       var items = isMatch(model) ? A2($List.indexedMap,update,A2(matches,model.string,model.items)) : _U.list([]);
       return A2($Html.div,
@@ -11081,10 +11090,10 @@ Elm.ItemList.make = function (_elm) {
            ,string: isMatch(model) ? model.string : ""
            ,items: addNot(model) ? model.items : A2($Basics._op["++"],model.items,_U.list([A3(newItem,model.string,model.uid,model.uid)]))});
          case "Up": return _U.update(model,{index: A2($Basics.max,model.index - 1,0)});
-         default: var itemLength = $List.length(model.items);
+         case "Down": var itemLength = $List.length(model.items);
            var matchesLength = $List.length(A2(matches,model.string,model.items));
-           return _U.update(model,
-           {index: isMatch(model) ? A2($Basics.min,model.index + 1,matchesLength - 1) : A2($Basics.min,model.index + 1,itemLength - 1)});}
+           return _U.update(model,{index: isMatch(model) ? A2($Basics.min,model.index + 1,matchesLength - 1) : A2($Basics.min,model.index + 1,itemLength - 1)});
+         default: return _U.update(model,{index: 0});}
    });
    var items = _U.list([A3(newItem,"Done",0,0),A3(newItem,"Remove",1,1)]);
    var init = {string: "",items: items,uid: 0,index: 0};
@@ -11171,7 +11180,7 @@ Elm.Main.make = function (_elm) {
    var addNot = function (model) {    return strEmpty(model) || isMatch(model);};
    var ItemList = function (a) {    return {ctor: "ItemList",_0: a};};
    var item = F3(function (address,model,item) {
-      var actions = A3($ItemList.view,A2($Signal.forwardTo,address,ItemList),item.actions,model.uid);
+      var actions = A2($ItemList.view,A2($Signal.forwardTo,address,ItemList),item.actions);
       var selected = _U.eq(item.index,model.index);
       var fontWeight = selected ? "bold" : "normal";
       var borderLeft = selected ? ".6472rem solid #333" : "";
@@ -11219,7 +11228,14 @@ Elm.Main.make = function (_elm) {
       return v;
    },
    function () {
-      var needsFocus = function (act) {    var _p2 = act;switch (_p2.ctor) {case "Enter": return true;case "Esc": return true;default: return false;}};
+      var needsFocus = function (act) {
+         var _p2 = act;
+         switch (_p2.ctor)
+         {case "Enter": return true;
+            case "Esc": return true;
+            case "ItemList": return _U.eq($Basics.toString(_p2._0),"Esc") ? true : false;
+            default: return false;}
+      };
       return A2($Signal.map,$Basics.toString,A3($Signal.filter,needsFocus,Esc,actions.signal));
    }());
    var newItem = F3(function (desc,id,index) {    return {desc: desc,id: id,index: index,actions: $ItemList.init};});
@@ -11238,10 +11254,9 @@ Elm.Main.make = function (_elm) {
            var matchesLength = $List.length(A2(matches,model.string,model.items));
            return _U.update(model,{index: isMatch(model) ? A2($Basics.min,model.index + 1,matchesLength - 1) : A2($Basics.min,model.index + 1,itemLength - 1)});
          case "Esc": return _U.update(model,{showActions: false,string: model.showActions ? model.string : ""});
-         default: var update = function (item) {
-              return _U.eq(item.index,model.index) ? _U.update(item,{actions: A2($ItemList.update,_p3._0,item.actions)}) : item;
-           };
-           return _U.update(model,{items: A2($List.map,update,model.items)});}
+         default: var _p4 = _p3._0;
+           var update = function (item) {    return _U.eq(item.index,model.index) ? _U.update(item,{actions: A2($ItemList.update,_p4,item.actions)}) : item;};
+           return _U.update(model,{items: A2($List.map,update,model.items),showActions: _U.eq($Basics.toString(_p4),"Esc") ? false : true});}
    });
    var init = {string: "",items: _U.list([]),uid: 0,index: 0,showActions: false};
    var initialModel = A2($Maybe.withDefault,init,getStorage);

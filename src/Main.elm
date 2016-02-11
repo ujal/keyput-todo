@@ -142,7 +142,11 @@ update action model =
                         { item | actions = ItemList.update act item.actions }
                     else item
             in
-                { model | items = List.map update model.items}
+                { model |
+                    items = List.map update model.items,
+                    showActions =
+                        if (toString act) == "Esc" then False else True
+                }
 
 
 
@@ -179,7 +183,7 @@ item address model item  =
         paddingLeft = if selected then "1.294rem" else ""
         displayActions = if selected && model.showActions then "block" else "none"
         actions =
-            ItemList.view (Signal.forwardTo address ItemList) item.actions model.uid
+            ItemList.view (Signal.forwardTo address ItemList) item.actions
     in
         li
             [ style [ ("font-weight", fontWeight)
@@ -237,6 +241,7 @@ port focus =
             case act of
               Enter -> True
               Esc -> True
+              ItemList act -> if (toString act) == "Esc" then True else False
               _ -> False
 
     in
