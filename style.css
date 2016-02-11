@@ -4,7 +4,7 @@ html, body {
   height: 98%;
 }
 
-.input {
+.input-main {
   display: block;
   width: 80%;
   max-width: 40rem;
@@ -16,7 +16,8 @@ html, body {
 .actions input {
   margin: 1.2rem 0 1.2rem;
   font-size: 1.2rem;
-  width: 50%;
+  width: 40%;
+  font-weight: normal;
 }
 
 ul {
@@ -31,6 +32,6 @@ ul {
 }
 
 .actions ul {
-  margin: 1.618rem 0;
+  margin: 0;
   font-size: 1.2rem;
 }

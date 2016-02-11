@@ -16,6 +16,20 @@ var storedState = localStorage.getItem('keyput-state');
 var startingState = storedState ? JSON.parse(storedState) : null;
 var keyput = Elm.fullscreen(Elm.Main, { getStorage: startingState });
 
+keyput.ports.focus.subscribe(function(action) {
+    if (action === 'Enter') {
+        $inputs = document.querySelectorAll('.input-actions')
+        for (var i = 0; i < $inputs.length; i++) {
+            if ($inputs[i].offsetParent !== null) {
+                $inputs[i].focus()
+            }
+        }
+    } else if (action == 'Esc') {
+        var $input = document.querySelector('.input-main')
+        $input.focus()
+    }
+});
+
 keyput.ports.setStorage.subscribe(function(state) {
     localStorage.setItem('keyput-state', JSON.stringify(state));
 });

@@ -130,8 +130,8 @@ update action model =
 
 -- VIEW
 
-view : Address Action -> Model -> Html
-view address model =
+view : Address Action -> Model -> Int -> Html
+view address model uid =
     let items =
             if isMatch model then
                 List.indexedMap update (matches model.string model.items)
@@ -145,7 +145,7 @@ view address model =
                 , value model.string
                 , onKeyDown address keyHandler
                 , on "input" targetValue (Signal.message address << UpdateString)
-                , class "input"
+                , class "input-actions"
                 ]
                 []
             , ul

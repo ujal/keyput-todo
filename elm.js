@@ -11056,7 +11056,7 @@ Elm.ItemList.make = function (_elm) {
    var UpdateString = function (a) {    return {ctor: "UpdateString",_0: a};};
    var NoOp = {ctor: "NoOp"};
    var keyHandler = function (code) {    var _p0 = code;switch (_p0) {case 13: return Enter;case 40: return Down;case 38: return Up;default: return NoOp;}};
-   var view = F2(function (address,model) {
+   var view = F3(function (address,model,uid) {
       var update = F2(function (i,item) {    return _U.update(item,{index: i});});
       var items = isMatch(model) ? A2($List.indexedMap,update,A2(matches,model.string,model.items)) : _U.list([]);
       return A2($Html.div,
@@ -11066,7 +11066,7 @@ Elm.ItemList.make = function (_elm) {
                       ,$Html$Attributes.value(model.string)
                       ,A2($Html$Events.onKeyDown,address,keyHandler)
                       ,A3($Html$Events.on,"input",$Html$Events.targetValue,function (_p1) {    return A2($Signal.message,address,UpdateString(_p1));})
-                      ,$Html$Attributes.$class("input")]),
+                      ,$Html$Attributes.$class("input-actions")]),
               _U.list([]))
               ,A2($Html.ul,_U.list([$Html$Attributes.$class("list")]),A2($List.map,A2(item,address,model),items))]));
    });
@@ -11171,16 +11171,18 @@ Elm.Main.make = function (_elm) {
    var addNot = function (model) {    return strEmpty(model) || isMatch(model);};
    var ItemList = function (a) {    return {ctor: "ItemList",_0: a};};
    var item = F3(function (address,model,item) {
+      var actions = A3($ItemList.view,A2($Signal.forwardTo,address,ItemList),item.actions,model.uid);
       var selected = _U.eq(item.index,model.index);
-      var actions = selected && model.showActions ? A2($ItemList.view,A2($Signal.forwardTo,address,ItemList),item.actions) : $Html.text("");
-      var paddingLeft = selected ? "1.294rem" : "";
-      var borderLeft = selected ? ".6472rem solid #333" : "";
       var fontWeight = selected ? "bold" : "normal";
+      var borderLeft = selected ? ".6472rem solid #333" : "";
+      var paddingLeft = selected ? "1.294rem" : "";
+      var displayActions = selected && model.showActions ? "block" : "none";
       return A2($Html.li,
       _U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "font-weight",_1: fontWeight}
                                               ,{ctor: "_Tuple2",_0: "border-left",_1: borderLeft}
                                               ,{ctor: "_Tuple2",_0: "padding-left",_1: paddingLeft}]))]),
-      _U.list([$Html.text(item.desc),A2($Html.div,_U.list([]),_U.list([actions]))]));
+      _U.list([$Html.text(item.desc)
+              ,A2($Html.div,_U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "display",_1: displayActions}]))]),_U.list([actions]))]));
    });
    var Esc = {ctor: "Esc"};
    var Down = {ctor: "Down"};
@@ -11207,17 +11209,25 @@ Elm.Main.make = function (_elm) {
                       ,$Html$Attributes.value(model.string)
                       ,A2($Html$Events.onKeyDown,address,keyHandler)
                       ,A3($Html$Events.on,"input",$Html$Events.targetValue,function (_p1) {    return A2($Signal.message,address,UpdateString(_p1));})
-                      ,$Html$Attributes.$class("input")]),
+                      ,$Html$Attributes.$class("input-main")]),
               _U.list([]))
               ,A2($Html.ul,_U.list([$Html$Attributes.$class("list")]),A2($List.map,A2(item,address,model),items))]));
    });
    var actions = $Signal.mailbox(NoOp);
+   var focus = Elm.Native.Port.make(_elm).outboundSignal("focus",
+   function (v) {
+      return v;
+   },
+   function () {
+      var needsFocus = function (act) {    var _p2 = act;switch (_p2.ctor) {case "Enter": return true;case "Esc": return true;default: return false;}};
+      return A2($Signal.map,$Basics.toString,A3($Signal.filter,needsFocus,Esc,actions.signal));
+   }());
    var newItem = F3(function (desc,id,index) {    return {desc: desc,id: id,index: index,actions: $ItemList.init};});
    var update = F2(function (action,model) {
-      var _p2 = action;
-      switch (_p2.ctor)
+      var _p3 = action;
+      switch (_p3.ctor)
       {case "NoOp": return model;
-         case "UpdateString": return _U.update(model,{string: _p2._0,index: isMatch(model) ? 0 : model.index});
+         case "UpdateString": return _U.update(model,{string: _p3._0,index: isMatch(model) ? 0 : model.index});
          case "Enter": return _U.update(model,
            {uid: addNot(model) ? model.uid : model.uid + 1
            ,string: isMatch(model) ? model.string : ""
@@ -11229,7 +11239,7 @@ Elm.Main.make = function (_elm) {
            return _U.update(model,{index: isMatch(model) ? A2($Basics.min,model.index + 1,matchesLength - 1) : A2($Basics.min,model.index + 1,itemLength - 1)});
          case "Esc": return _U.update(model,{showActions: false,string: model.showActions ? model.string : ""});
          default: var update = function (item) {
-              return _U.eq(item.index,model.index) ? _U.update(item,{actions: A2($ItemList.update,_p2._0,item.actions)}) : item;
+              return _U.eq(item.index,model.index) ? _U.update(item,{actions: A2($ItemList.update,_p3._0,item.actions)}) : item;
            };
            return _U.update(model,{items: A2($List.map,update,model.items)});}
    });
@@ -11237,25 +11247,6 @@ Elm.Main.make = function (_elm) {
    var initialModel = A2($Maybe.withDefault,init,getStorage);
    var model = A3($Signal.foldp,update,initialModel,actions.signal);
    var main = A2($Signal.map,view(actions.address),model);
-   var modelLogger = Elm.Native.Port.make(_elm).outboundSignal("modelLogger",
-   function (v) {
-      return {string: v.string
-             ,items: Elm.Native.List.make(_elm).toArray(v.items).map(function (v) {
-                return {desc: v.desc
-                       ,id: v.id
-                       ,index: v.index
-                       ,actions: {string: v.actions.string
-                                 ,items: Elm.Native.List.make(_elm).toArray(v.actions.items).map(function (v) {
-                                    return {desc: v.desc,id: v.id,index: v.index};
-                                 })
-                                 ,uid: v.actions.uid
-                                 ,index: v.actions.index}};
-             })
-             ,uid: v.uid
-             ,index: v.index
-             ,showActions: v.showActions};
-   },
-   A2($Signal.map,$Debug.log(""),model));
    var setStorage = Elm.Native.Port.make(_elm).outboundSignal("setStorage",
    function (v) {
       return {string: v.string

@@ -163,7 +163,7 @@ view address model =
                 , value model.string
                 , onKeyDown address keyHandler
                 , on "input" targetValue (Signal.message address << UpdateString)
-                , class "input"
+                , class "input-main"
                 ]
                 []
             , ul
@@ -173,15 +173,13 @@ view address model =
 
 item : Address Action -> Model -> Item -> Html
 item address model item  =
-    let fontWeight  = if selected then "bold" else "normal"
+    let selected    = item.index == model.index
+        fontWeight  = if selected then "bold" else "normal"
         borderLeft  = if selected then ".6472rem solid #333" else ""
         paddingLeft = if selected then "1.294rem" else ""
-        selected = item.index == model.index
+        displayActions = if selected && model.showActions then "block" else "none"
         actions =
-            if selected && model.showActions then
-                ItemList.view (Signal.forwardTo address ItemList) item.actions
-            else
-                text ""
+            ItemList.view (Signal.forwardTo address ItemList) item.actions model.uid
     in
         li
             [ style [ ("font-weight", fontWeight)
@@ -190,7 +188,8 @@ item address model item  =
                     ]
             ]
             [ text item.desc
-            , div [] [ actions ]]
+            , div [ style [ ("display", displayActions) ] ] [ actions ]
+            ]
 
 
 keyHandler : Int -> Action
@@ -227,9 +226,23 @@ actions =
 
 
 -- outgoing
-port modelLogger : Signal Model
-port modelLogger =
-    Signal.map (Debug.log "") model
+--port modelLogger : Signal Model
+--port modelLogger =
+    --Signal.map (Debug.log "") model
+
+
+port focus : Signal String
+port focus =
+    let needsFocus act =
+            case act of
+              Enter -> True
+              Esc -> True
+              _ -> False
+
+    in
+        actions.signal
+          |> Signal.filter needsFocus Esc
+          |> Signal.map toString
 
 
 -- interactions with localStorage to save the model
