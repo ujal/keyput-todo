@@ -44,7 +44,8 @@ init =
 items : List Item
 items =
     [ newItem "Done" 0 0
-    , newItem "Remove" 1 1
+    , newItem "Undo" 1 1
+    , newItem "Remove" 2 2
     ]
 
 
@@ -67,7 +68,7 @@ type Action
     | Esc
 
 
-type EnterAction = Done | Remove
+type EnterAction = Done | Remove | Undo
 
 
 matches : String -> List Item -> List Item
@@ -113,10 +114,14 @@ update action model =
                 }
 
         Enter _ ->
-            { model |
-                string = "",
-                index = 0
-            }
+            let update i item = { item | index = i }
+            in
+                { model |
+                    string = "",
+                    index = 0,
+                    items = List.indexedMap update model.items,
+                    matchedItems = List.indexedMap update model.matchedItems
+                }
 
         Up ->
             { model |
@@ -144,8 +149,8 @@ update action model =
 
 -- VIEW
 
-view : Address Action -> Model -> Html
-view address model =
+view : Address Action -> Model -> Bool -> Html
+view address model isDone =
     let items =
             if isMatch model then model.matchedItems
             else if strEmpty model then model.items
@@ -165,15 +170,20 @@ view address model =
                 []
             , ul
                 [ class "list" ]
-                (List.map (item address model) items)
+                (List.map (item address model isDone) items)
             ]
 
-item : Address Action -> Model -> Item -> Html
-item address model item  =
+item : Address Action -> Model -> Bool -> Item -> Html
+item address model isDone item =
     let fontWeight = if selected then "bold" else "normal"
         borderLeft = if selected then ".6472rem solid #333" else ""
         paddingLeft = if selected then "1.294rem" else ""
         selected = item.index == model.index
+        itemDesc =
+            if item.desc == "Undo" then
+                if isDone then item.desc else ""
+            else item.desc
+
     in
         li
             [ style [ ("font-weight", fontWeight)
@@ -181,7 +191,8 @@ item address model item  =
                     , ("padding-left", paddingLeft)
                     ]
             ]
-            [text item.desc]
+            [text itemDesc]
+
 
 
 select : Int -> List Item -> Item
@@ -204,6 +215,7 @@ keyHandler model code =
             in
                 if selected.desc == "Done" then Enter Done
                 else if selected.desc == "Remove" then Enter Remove
+                else if selected.desc == "Undo" then Enter Undo
                 else Enter Done
         40 -> Down
         38 -> Up

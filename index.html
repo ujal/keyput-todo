@@ -17,7 +17,6 @@ var startingState = storedState ? JSON.parse(storedState) : null;
 var keyput = Elm.fullscreen(Elm.Main, { getStorage: startingState });
 
 keyput.ports.focus.subscribe(function(action) {
-    console.log(action)
     setTimeout(function(){
         if (action === 'Enter') {
             $inputs = document.querySelectorAll('.input-actions');

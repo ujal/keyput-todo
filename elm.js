@@ -11025,7 +11025,8 @@ Elm.ItemList.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm),
    $String = Elm.String.make(_elm);
    var _op = {};
-   var item = F3(function (address,model,item) {
+   var item = F4(function (address,model,isDone,item) {
+      var itemDesc = _U.eq(item.desc,"Undo") ? isDone ? item.desc : "" : item.desc;
       var selected = _U.eq(item.index,model.index);
       var paddingLeft = selected ? "1.294rem" : "";
       var borderLeft = selected ? ".6472rem solid #333" : "";
@@ -11034,7 +11035,7 @@ Elm.ItemList.make = function (_elm) {
       _U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "font-weight",_1: fontWeight}
                                               ,{ctor: "_Tuple2",_0: "border-left",_1: borderLeft}
                                               ,{ctor: "_Tuple2",_0: "padding-left",_1: paddingLeft}]))]),
-      _U.list([$Html.text(item.desc)]));
+      _U.list([$Html.text(itemDesc)]));
    });
    var strEmpty = function (model) {    return $String.isEmpty(model.string);};
    var matches = F2(function (str,items) {
@@ -11057,13 +11058,16 @@ Elm.ItemList.make = function (_elm) {
          case "UpdateString": var _p1 = _p0._0;
            var update = F2(function (i,item) {    return _U.update(item,{index: i});});
            return _U.update(model,{string: _p1,index: isMatch(model) ? 0 : model.index,matchedItems: A2($List.indexedMap,update,A2(matches,_p1,model.items))});
-         case "Enter": return _U.update(model,{string: "",index: 0});
+         case "Enter": var update = F2(function (i,item) {    return _U.update(item,{index: i});});
+           return _U.update(model,
+           {string: "",index: 0,items: A2($List.indexedMap,update,model.items),matchedItems: A2($List.indexedMap,update,model.matchedItems)});
          case "Up": return _U.update(model,{index: A2($Basics.max,model.index - 1,0)});
          case "Down": var itemLength = $List.length(model.items);
            var matchesLength = $List.length(A2(matches,model.string,model.items));
            return _U.update(model,{index: isMatch(model) ? A2($Basics.min,model.index + 1,matchesLength - 1) : A2($Basics.min,model.index + 1,itemLength - 1)});
          default: return _U.update(model,{index: 0,string: ""});}
    });
+   var Undo = {ctor: "Undo"};
    var Remove = {ctor: "Remove"};
    var Done = {ctor: "Done"};
    var Esc = {ctor: "Esc"};
@@ -11081,13 +11085,14 @@ Elm.ItemList.make = function (_elm) {
       var _p2 = code;
       switch (_p2)
       {case 13: var selected = $List.isEmpty(model.matchedItems) ? A2(select,model.index,model.items) : A2(select,model.index,model.matchedItems);
-           return _U.eq(selected.desc,"Done") ? Enter(Done) : _U.eq(selected.desc,"Remove") ? Enter(Remove) : Enter(Done);
+           return _U.eq(selected.desc,"Done") ? Enter(Done) : _U.eq(selected.desc,"Remove") ? Enter(Remove) : _U.eq(selected.desc,
+           "Undo") ? Enter(Undo) : Enter(Done);
          case 40: return Down;
          case 38: return Up;
          case 27: return Esc;
          default: return NoOp;}
    });
-   var view = F2(function (address,model) {
+   var view = F3(function (address,model,isDone) {
       var update = F2(function (i,item) {    return _U.update(item,{index: i});});
       var items = isMatch(model) ? model.matchedItems : strEmpty(model) ? model.items : _U.list([]);
       return A2($Html.div,
@@ -11099,9 +11104,9 @@ Elm.ItemList.make = function (_elm) {
                       ,A3($Html$Events.on,"input",$Html$Events.targetValue,function (_p3) {    return A2($Signal.message,address,UpdateString(_p3));})
                       ,$Html$Attributes.$class("input-actions")]),
               _U.list([]))
-              ,A2($Html.ul,_U.list([$Html$Attributes.$class("list")]),A2($List.map,A2(item,address,model),items))]));
+              ,A2($Html.ul,_U.list([$Html$Attributes.$class("list")]),A2($List.map,A3(item,address,model,isDone),items))]));
    });
-   var items = _U.list([A3(newItem,"Done",0,0),A3(newItem,"Remove",1,1)]);
+   var items = _U.list([A3(newItem,"Done",0,0),A3(newItem,"Undo",1,1),A3(newItem,"Remove",2,2)]);
    var init = {string: "",items: items,matchedItems: _U.list([]),uid: 0,index: 0};
    var Item = F3(function (a,b,c) {    return {desc: a,id: b,index: c};});
    var Model = F5(function (a,b,c,d,e) {    return {string: a,items: b,matchedItems: c,uid: d,index: e};});
@@ -11242,7 +11247,7 @@ Elm.Main.make = function (_elm) {
    var addNot = function (model) {    return strEmpty(model) || isMatch(model);};
    var ItemList = F2(function (a,b) {    return {ctor: "ItemList",_0: a,_1: b};});
    var item = F3(function (address,model,item) {
-      var itemActions = A2($ItemList.view,A2($Signal.forwardTo,address,ItemList(item.id)),item.itemActions);
+      var itemActions = A3($ItemList.view,A2($Signal.forwardTo,address,ItemList(item.id)),item.itemActions,item.done);
       var decor = item.done ? "line-through" : "none";
       var selected = _U.eq(item.index,model.index);
       var fontWeight = selected ? "bold" : "normal";
@@ -11252,9 +11257,8 @@ Elm.Main.make = function (_elm) {
       return A2($Html.li,
       _U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "font-weight",_1: fontWeight}
                                               ,{ctor: "_Tuple2",_0: "border-left",_1: borderLeft}
-                                              ,{ctor: "_Tuple2",_0: "padding-left",_1: paddingLeft}
-                                              ,{ctor: "_Tuple2",_0: "text-decoration",_1: decor}]))]),
-      _U.list([$Html.text(item.desc)
+                                              ,{ctor: "_Tuple2",_0: "padding-left",_1: paddingLeft}]))]),
+      _U.list([A2($Html.div,_U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "text-decoration",_1: decor}]))]),_U.list([$Html.text(item.desc)]))
               ,A2($Html.div,_U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "display",_1: displayActions}]))]),_U.list([itemActions]))]));
    });
    var Esc = {ctor: "Esc"};
@@ -11295,12 +11299,12 @@ Elm.Main.make = function (_elm) {
          var _p2 = act;
          switch (_p2.ctor)
          {case "Enter": return "Enter";
-            case "Esc": return "Esc";
             case "ItemList": var _p3 = $Basics.toString(_p2._1);
               switch (_p3)
               {case "Esc": return "ItemList Esc";
                  case "Enter Done": return "ItemList Enter";
                  case "Enter Remove": return "ItemList Enter";
+                 case "Enter Undo": return "ItemList Enter";
                  default: return "";}
             default: return "";}
       };
@@ -11308,12 +11312,12 @@ Elm.Main.make = function (_elm) {
          var _p4 = act;
          switch (_p4.ctor)
          {case "Enter": return true;
-            case "Esc": return true;
             case "ItemList": var _p5 = $Basics.toString(_p4._1);
               switch (_p5)
               {case "Esc": return true;
                  case "Enter Done": return true;
                  case "Enter Remove": return true;
+                 case "Enter Undo": return true;
                  default: return false;}
             default: return false;}
       };
@@ -11340,14 +11344,16 @@ Elm.Main.make = function (_elm) {
          default: var _p14 = _p6._0;
            var _p13 = _p6._1;
            var updateIndex = F2(function (i,item) {    return _U.update(item,{index: i});});
-           var updateDone = function (i) {    return _U.eq(i.id,_p14) ? _U.update(i,{done: true}) : i;};
+           var toggle = function (i) {    return _U.eq(i.id,_p14) ? _U.update(i,{done: $Basics.not(i.done)}) : i;};
            var update = function (item) {    return _U.eq(item.id,_p14) ? _U.update(item,{itemActions: A2($ItemList.update,_p13,item.itemActions)}) : item;};
+           var updateItems = function (items) {    return A2($List.map,update,items);};
            return _U.update(model,
            {index: function () {
               var _p8 = $Basics.toString(_p13);
               switch (_p8)
               {case "Esc": return model.index;
-                 case "Enter Done": return 0;
+                 case "Enter Done": return model.index;
+                 case "Enter Undo": return 0;
                  case "Enter Remove": return 0;
                  default: return model.index;}
            }()
@@ -11356,30 +11362,34 @@ Elm.Main.make = function (_elm) {
               switch (_p9)
               {case "Esc": return model.string;
                  case "Enter Done": return "";
+                 case "Enter Undo": return "";
                  case "Enter Remove": return "";
                  default: return model.string;}
            }()
            ,items: function () {
               var _p10 = $Basics.toString(_p13);
               switch (_p10)
-              {case "Esc": return A2($List.map,update,model.items);
-                 case "Enter Done": return A2($List.map,updateDone,model.items);
+              {case "Esc": return updateItems(model.items);
+                 case "Enter Done": return A2($List.map,toggle,updateItems(model.items));
+                 case "Enter Undo": return A2($List.map,toggle,updateItems(model.items));
                  case "Enter Remove": return A2($List.indexedMap,updateIndex,A2($List.filter,function (i) {    return !_U.eq(i.id,_p14);},model.items));
-                 default: return A2($List.map,update,model.items);}
+                 default: return updateItems(model.items);}
            }()
            ,matchedItems: function () {
               var _p11 = $Basics.toString(_p13);
               switch (_p11)
-              {case "Esc": return A2($List.map,update,model.matchedItems);
-                 case "Enter Done": return A2($List.map,updateDone,model.matchedItems);
+              {case "Esc": return updateItems(model.matchedItems);
+                 case "Enter Done": return A2($List.map,toggle,updateItems(model.matchedItems));
+                 case "Enter Undo": return A2($List.map,toggle,updateItems(model.matchedItems));
                  case "Enter Remove": return A2($List.filter,function (i) {    return !_U.eq(i.id,_p14);},model.matchedItems);
-                 default: return A2($List.map,update,model.matchedItems);}
+                 default: return updateItems(model.matchedItems);}
            }()
            ,showActions: function () {
               var _p12 = $Basics.toString(_p13);
               switch (_p12)
               {case "Esc": return false;
                  case "Enter Done": return false;
+                 case "Enter Undo": return false;
                  case "Enter Remove": return false;
                  default: return true;}
            }()});}

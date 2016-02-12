@@ -148,40 +148,48 @@ update action model =
                     if item.id == id then
                         { item | itemActions = ItemList.update act item.itemActions }
                     else item
-                updateDone i = if i.id == id then { i | done = True } else i
+                toggle i = if i.id == id then { i | done = not i.done } else i
                 updateIndex i item = { item | index = i }
+                updateItems items = List.map update items
             in
                 { model |
                     index =
                         case (toString act) of
                             "Esc" -> model.index
-                            "Enter Done" -> 0
+                            "Enter Done" -> model.index
+                            "Enter Undo" -> 0
                             "Enter Remove" -> 0
                             _ -> model.index,
                     string =
                         case (toString act) of
                             "Esc" -> model.string
                             "Enter Done" -> ""
+                            "Enter Undo" -> ""
                             "Enter Remove" -> ""
                             _ -> model.string,
                     items =
                         case (toString act) of
-                            "Esc" -> List.map update model.items
-                            "Enter Done" -> List.map updateDone model.items
+                            "Esc" -> updateItems model.items
+                            "Enter Done" -> List.map toggle (updateItems model.items)
+                            "Enter Undo" -> List.map toggle (updateItems model.items)
                             "Enter Remove" ->
-                                List.indexedMap updateIndex (List.filter (\i -> i.id /= id) model.items)
-                            _ -> List.map update model.items,
+                                List.indexedMap
+                                    updateIndex
+                                    (List.filter (\i -> i.id /= id) model.items)
+                            _ -> updateItems model.items,
                     matchedItems =
                         case (toString act) of
-                            "Esc" -> List.map update model.matchedItems
-                            "Enter Done" -> List.map updateDone model.matchedItems
+                            "Esc" -> updateItems model.matchedItems
+                            "Enter Done" -> List.map toggle (updateItems model.matchedItems)
+                            "Enter Undo" -> List.map toggle (updateItems model.matchedItems)
                             "Enter Remove" ->
                                 List.filter (\i -> i.id /= id) model.matchedItems
-                            _ -> List.map update model.matchedItems,
+                            _ -> updateItems model.matchedItems,
                     showActions =
                         case (toString act) of
                             "Esc" -> False
                             "Enter Done" -> False
+                            "Enter Undo" -> False
                             "Enter Remove" -> False
                             _ -> True
                 }
@@ -224,15 +232,15 @@ item address model item  =
             ItemList.view
                 (Signal.forwardTo address (ItemList item.id))
                 item.itemActions
+                item.done
     in
         li
             [ style [ ("font-weight", fontWeight)
                     , ("border-left", borderLeft)
                     , ("padding-left", paddingLeft)
-                    , ("text-decoration", decor)
                     ]
             ]
-            [ text item.desc
+            [ div [ style [("text-decoration", decor)]] [text item.desc]
             , div
                 [ style [ ("display", displayActions) ] ]
                 [ itemActions ]
@@ -283,24 +291,24 @@ port focus =
     let needsFocus act =
             case act of
               Enter -> True
-              Esc -> True
               ItemList _ act ->
                 case (toString act) of
                     "Esc" -> True
                     "Enter Done" -> True
                     "Enter Remove" -> True
+                    "Enter Undo" -> True
                     _ -> False
               _ -> False
 
         toActionString act =
             case act of
                 Enter -> "Enter"
-                Esc -> "Esc"
                 ItemList _ act ->
                     case (toString act) of
                         "Esc" -> "ItemList Esc"
                         "Enter Done" -> "ItemList Enter"
                         "Enter Remove" -> "ItemList Enter"
+                        "Enter Undo" -> "ItemList Enter"
                         _ -> ""
                 _ -> ""
 
