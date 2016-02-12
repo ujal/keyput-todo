@@ -30,6 +30,7 @@ type alias Item =
     , id : Int
     , index : Int
     , itemActions : ItemList.Model
+    , done : Bool
     }
 
 
@@ -50,6 +51,7 @@ newItem desc id index =
     , id = id
     , index = index
     , itemActions = ItemList.init
+    , done = False
     }
 
 
@@ -113,7 +115,8 @@ update action model =
                 string = if isMatch model then model.string else "",
                 items =
                     if addNot model then model.items
-                    else model.items ++ [newItem model.string model.uid model.uid],
+                    else model.items ++
+                        [newItem model.string model.uid (List.length model.items)],
                 showActions =
                     if addNot model then True
                     else False
@@ -145,14 +148,42 @@ update action model =
                     if item.id == id then
                         { item | itemActions = ItemList.update act item.itemActions }
                     else item
+                updateDone i = if i.id == id then { i | done = True } else i
+                updateIndex i item = { item | index = i }
             in
                 { model |
-                    items = List.map update model.items,
-                    matchedItems = List.map update model.matchedItems,
+                    index =
+                        case (toString act) of
+                            "Esc" -> model.index
+                            "Enter Done" -> 0
+                            "Enter Remove" -> 0
+                            _ -> model.index,
+                    string =
+                        case (toString act) of
+                            "Esc" -> model.string
+                            "Enter Done" -> ""
+                            "Enter Remove" -> ""
+                            _ -> model.string,
+                    items =
+                        case (toString act) of
+                            "Esc" -> List.map update model.items
+                            "Enter Done" -> List.map updateDone model.items
+                            "Enter Remove" ->
+                                List.indexedMap updateIndex (List.filter (\i -> i.id /= id) model.items)
+                            _ -> List.map update model.items,
+                    matchedItems =
+                        case (toString act) of
+                            "Esc" -> List.map update model.matchedItems
+                            "Enter Done" -> List.map updateDone model.matchedItems
+                            "Enter Remove" ->
+                                List.filter (\i -> i.id /= id) model.matchedItems
+                            _ -> List.map update model.matchedItems,
                     showActions =
-                        if (toString act) == "Esc" || (toString act) == "Enter"
-                        then False
-                        else True
+                        case (toString act) of
+                            "Esc" -> False
+                            "Enter Done" -> False
+                            "Enter Remove" -> False
+                            _ -> True
                 }
 
 
@@ -188,6 +219,7 @@ item address model item  =
         borderLeft  = if selected then ".6472rem solid #333" else ""
         paddingLeft = if selected then "1.294rem" else ""
         displayActions = if selected && model.showActions then "block" else "none"
+        decor = if item.done then "line-through" else "none"
         itemActions =
             ItemList.view
                 (Signal.forwardTo address (ItemList item.id))
@@ -197,6 +229,7 @@ item address model item  =
             [ style [ ("font-weight", fontWeight)
                     , ("border-left", borderLeft)
                     , ("padding-left", paddingLeft)
+                    , ("text-decoration", decor)
                     ]
             ]
             [ text item.desc
@@ -240,9 +273,9 @@ actions =
 
 
 -- outgoing
---port modelLogger : Signal Model
---port modelLogger =
-    --Signal.map (Debug.log "") model
+port modelLogger : Signal Model
+port modelLogger =
+    Signal.map (Debug.log "") model
 
 
 port focus : Signal String
@@ -252,15 +285,23 @@ port focus =
               Enter -> True
               Esc -> True
               ItemList _ act ->
-                  if (toString act) == "Esc" ||
-                      (toString act) == "Enter" then True else False
+                case (toString act) of
+                    "Esc" -> True
+                    "Enter Done" -> True
+                    "Enter Remove" -> True
+                    _ -> False
               _ -> False
 
         toActionString act =
             case act of
                 Enter -> "Enter"
                 Esc -> "Esc"
-                ItemList _ act -> "ItemList " ++ (toString act)
+                ItemList _ act ->
+                    case (toString act) of
+                        "Esc" -> "ItemList Esc"
+                        "Enter Done" -> "ItemList Enter"
+                        "Enter Remove" -> "ItemList Enter"
+                        _ -> ""
                 _ -> ""
 
     in

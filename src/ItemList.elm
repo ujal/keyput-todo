@@ -61,10 +61,13 @@ newItem desc id index =
 type Action
     = NoOp
     | UpdateString String
-    | Enter
+    | Enter EnterAction
     | Up
     | Down
     | Esc
+
+
+type EnterAction = Done | Remove
 
 
 matches : String -> List Item -> List Item
@@ -109,7 +112,7 @@ update action model =
                     matchedItems = List.indexedMap update (matches str model.items)
                 }
 
-        Enter ->
+        Enter _ ->
             { model |
                 string = "",
                 index = 0
@@ -155,7 +158,7 @@ view address model =
             [ input
                 [ autofocus True
                 , value model.string
-                , onKeyDown address keyHandler
+                , onKeyDown address (keyHandler model)
                 , on "input" targetValue (Signal.message address << UpdateString)
                 , class "input-actions"
                 ]
@@ -181,10 +184,27 @@ item address model item  =
             [text item.desc]
 
 
-keyHandler : Int -> Action
-keyHandler code =
+select : Int -> List Item -> Item
+select index items =
+    let filterf item = item.index == index
+    in
+        Maybe.withDefault
+            (newItem "Done" 0 0)
+            (List.head (List.filter filterf items))
+
+
+keyHandler : Model -> Int -> Action
+keyHandler model code =
     case code of
-        13 -> Enter
+        13 ->
+            let selected =
+                    if List.isEmpty model.matchedItems
+                    then select model.index model.items
+                    else select model.index model.matchedItems
+            in
+                if selected.desc == "Done" then Enter Done
+                else if selected.desc == "Remove" then Enter Remove
+                else Enter Done
         40 -> Down
         38 -> Up
         27 -> Esc

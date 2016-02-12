@@ -35,3 +35,7 @@ ul {
   margin: 0;
   font-size: 1.2rem;
 }
+
+.actions ul li {
+  text-decoration: none;
+}

@@ -17,6 +17,7 @@ var startingState = storedState ? JSON.parse(storedState) : null;
 var keyput = Elm.fullscreen(Elm.Main, { getStorage: startingState });
 
 keyput.ports.focus.subscribe(function(action) {
+    console.log(action)
     setTimeout(function(){
         if (action === 'Enter') {
             $inputs = document.querySelectorAll('.input-actions');
@@ -25,9 +26,7 @@ keyput.ports.focus.subscribe(function(action) {
                     $inputs[i].focus();
                 }
             }
-        } else if (action == 'Esc' ||
-                   action == 'ItemList Esc' ||
-                   action == 'ItemList Enter') {
+        } else if (action == "ItemList Esc" || action == "ItemList Enter") {
             var $input = document.querySelector('.input-main');
             $input.focus();
         }
