@@ -44,7 +44,7 @@ init =
 items : List Item
 items =
     [ newItem "Done" 0 0
-    , newItem "Remove" 2 2
+    , newItem "Remove" 1 1
     ]
 
 

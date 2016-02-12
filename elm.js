@@ -11104,7 +11104,7 @@ Elm.ItemList.make = function (_elm) {
               _U.list([]))
               ,A2($Html.ul,_U.list([$Html$Attributes.$class("list")]),A2($List.map,A3(item,address,model,isDone),items))]));
    });
-   var items = _U.list([A3(newItem,"Done",0,0),A3(newItem,"Remove",2,2)]);
+   var items = _U.list([A3(newItem,"Done",0,0),A3(newItem,"Remove",1,1)]);
    var init = {string: "",items: items,matchedItems: _U.list([]),uid: 0,index: 0};
    var Item = F3(function (a,b,c) {    return {desc: a,id: b,index: c};});
    var Model = F5(function (a,b,c,d,e) {    return {string: a,items: b,matchedItems: c,uid: d,index: e};});
