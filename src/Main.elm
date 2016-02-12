@@ -148,9 +148,9 @@ update action model =
                     if item.id == id then
                         { item | itemActions = ItemList.update act item.itemActions }
                     else item
+                updateItems items = List.map update items
                 toggle i = if i.id == id then { i | done = not i.done } else i
                 updateIndex i item = { item | index = i }
-                updateItems items = List.map update items
             in
                 { model |
                     index =
@@ -158,34 +158,47 @@ update action model =
                             "Esc" -> model.index
                             "Enter Done" -> model.index
                             "Enter Remove" -> 0
+                            "Enter Clear" -> 0
                             _ -> model.index,
                     string =
                         case (toString act) of
                             "Esc" -> model.string
                             "Enter Done" -> ""
                             "Enter Remove" -> ""
+                            "Enter Clear" -> ""
                             _ -> model.string,
                     items =
                         case (toString act) of
                             "Esc" -> updateItems model.items
                             "Enter Done" -> List.map toggle (updateItems model.items)
                             "Enter Remove" ->
-                                List.indexedMap
-                                    updateIndex
-                                    (List.filter (\i -> i.id /= id) model.items)
+                                (List.filter (\i -> i.id /= id) model.items)
+                                    |> List.indexedMap updateIndex
+                                    |> updateItems
+                            "Enter Clear" ->
+                                (List.filter (not << .done) model.items)
+                                    |> List.indexedMap updateIndex
+                                    |> updateItems
                             _ -> updateItems model.items,
                     matchedItems =
                         case (toString act) of
                             "Esc" -> updateItems model.matchedItems
                             "Enter Done" -> List.map toggle (updateItems model.matchedItems)
                             "Enter Remove" ->
-                                List.filter (\i -> i.id /= id) model.matchedItems
+                                (List.filter (\i -> i.id /= id) model.matchedItems)
+                                    |> List.indexedMap updateIndex
+                                    |> updateItems
+                            "Enter Clear" ->
+                                (List.filter (not << .done) model.matchedItems)
+                                    |> List.indexedMap updateIndex
+                                    |> updateItems
                             _ -> updateItems model.matchedItems,
                     showActions =
                         case (toString act) of
                             "Esc" -> False
                             "Enter Done" -> False
                             "Enter Remove" -> False
+                            "Enter Clear" -> False
                             _ -> True
                 }
 
@@ -291,6 +304,7 @@ port focus =
                     "Esc" -> True
                     "Enter Done" -> True
                     "Enter Remove" -> True
+                    "Enter Clear" -> True
                     _ -> False
               _ -> False
 
@@ -302,6 +316,7 @@ port focus =
                         "Esc" -> "ItemList Esc"
                         "Enter Done" -> "ItemList Enter"
                         "Enter Remove" -> "ItemList Enter"
+                        "Enter Clear" -> "ItemList Enter"
                         _ -> ""
                 _ -> ""
 

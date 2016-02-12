@@ -11067,6 +11067,7 @@ Elm.ItemList.make = function (_elm) {
            return _U.update(model,{index: isMatch(model) ? A2($Basics.min,model.index + 1,matchesLength - 1) : A2($Basics.min,model.index + 1,itemLength - 1)});
          default: return _U.update(model,{index: 0,string: ""});}
    });
+   var Clear = {ctor: "Clear"};
    var Remove = {ctor: "Remove"};
    var Done = {ctor: "Done"};
    var Esc = {ctor: "Esc"};
@@ -11084,7 +11085,8 @@ Elm.ItemList.make = function (_elm) {
       var _p2 = code;
       switch (_p2)
       {case 13: var selected = $List.isEmpty(model.matchedItems) ? A2(select,model.index,model.items) : A2(select,model.index,model.matchedItems);
-           return _U.eq(selected.desc,"Done") ? Enter(Done) : _U.eq(selected.desc,"Remove") ? Enter(Remove) : Enter(Done);
+           return _U.eq(selected.desc,"Done") ? Enter(Done) : _U.eq(selected.desc,"Remove") ? Enter(Remove) : _U.eq(selected.desc,
+           "Clear") ? Enter(Clear) : Enter(Done);
          case 40: return Down;
          case 38: return Up;
          case 27: return Esc;
@@ -11104,7 +11106,7 @@ Elm.ItemList.make = function (_elm) {
               _U.list([]))
               ,A2($Html.ul,_U.list([$Html$Attributes.$class("list")]),A2($List.map,A3(item,address,model,isDone),items))]));
    });
-   var items = _U.list([A3(newItem,"Done",0,0),A3(newItem,"Remove",1,1)]);
+   var items = _U.list([A3(newItem,"Done",0,0),A3(newItem,"Remove",1,1),A3(newItem,"--",2,2),A3(newItem,"Clear",3,3)]);
    var init = {string: "",items: items,matchedItems: _U.list([]),uid: 0,index: 0};
    var Item = F3(function (a,b,c) {    return {desc: a,id: b,index: c};});
    var Model = F5(function (a,b,c,d,e) {    return {string: a,items: b,matchedItems: c,uid: d,index: e};});
@@ -11302,6 +11304,7 @@ Elm.Main.make = function (_elm) {
               {case "Esc": return "ItemList Esc";
                  case "Enter Done": return "ItemList Enter";
                  case "Enter Remove": return "ItemList Enter";
+                 case "Enter Clear": return "ItemList Enter";
                  default: return "";}
             default: return "";}
       };
@@ -11314,6 +11317,7 @@ Elm.Main.make = function (_elm) {
               {case "Esc": return true;
                  case "Enter Done": return true;
                  case "Enter Remove": return true;
+                 case "Enter Clear": return true;
                  default: return false;}
             default: return false;}
       };
@@ -11337,51 +11341,64 @@ Elm.Main.make = function (_elm) {
            var matchesLength = $List.length(A2(matches,model.string,model.items));
            return _U.update(model,{index: isMatch(model) ? A2($Basics.min,model.index + 1,matchesLength - 1) : A2($Basics.min,model.index + 1,itemLength - 1)});
          case "Esc": return _U.update(model,{showActions: false,string: model.showActions ? model.string : ""});
-         default: var _p14 = _p6._0;
-           var _p13 = _p6._1;
+         default: var _p16 = _p6._0;
+           var _p15 = _p6._1;
            var updateIndex = F2(function (i,item) {    return _U.update(item,{index: i});});
-           var toggle = function (i) {    return _U.eq(i.id,_p14) ? _U.update(i,{done: $Basics.not(i.done)}) : i;};
-           var update = function (item) {    return _U.eq(item.id,_p14) ? _U.update(item,{itemActions: A2($ItemList.update,_p13,item.itemActions)}) : item;};
+           var toggle = function (i) {    return _U.eq(i.id,_p16) ? _U.update(i,{done: $Basics.not(i.done)}) : i;};
+           var update = function (item) {    return _U.eq(item.id,_p16) ? _U.update(item,{itemActions: A2($ItemList.update,_p15,item.itemActions)}) : item;};
            var updateItems = function (items) {    return A2($List.map,update,items);};
            return _U.update(model,
            {index: function () {
-              var _p8 = $Basics.toString(_p13);
+              var _p8 = $Basics.toString(_p15);
               switch (_p8)
               {case "Esc": return model.index;
                  case "Enter Done": return model.index;
                  case "Enter Remove": return 0;
+                 case "Enter Clear": return 0;
                  default: return model.index;}
            }()
            ,string: function () {
-              var _p9 = $Basics.toString(_p13);
+              var _p9 = $Basics.toString(_p15);
               switch (_p9)
               {case "Esc": return model.string;
                  case "Enter Done": return "";
                  case "Enter Remove": return "";
+                 case "Enter Clear": return "";
                  default: return model.string;}
            }()
            ,items: function () {
-              var _p10 = $Basics.toString(_p13);
+              var _p10 = $Basics.toString(_p15);
               switch (_p10)
               {case "Esc": return updateItems(model.items);
                  case "Enter Done": return A2($List.map,toggle,updateItems(model.items));
-                 case "Enter Remove": return A2($List.indexedMap,updateIndex,A2($List.filter,function (i) {    return !_U.eq(i.id,_p14);},model.items));
+                 case "Enter Remove": return updateItems(A2($List.indexedMap,
+                   updateIndex,
+                   A2($List.filter,function (i) {    return !_U.eq(i.id,_p16);},model.items)));
+                 case "Enter Clear": return updateItems(A2($List.indexedMap,
+                   updateIndex,
+                   A2($List.filter,function (_p11) {    return $Basics.not(function (_) {    return _.done;}(_p11));},model.items)));
                  default: return updateItems(model.items);}
            }()
            ,matchedItems: function () {
-              var _p11 = $Basics.toString(_p13);
-              switch (_p11)
+              var _p12 = $Basics.toString(_p15);
+              switch (_p12)
               {case "Esc": return updateItems(model.matchedItems);
                  case "Enter Done": return A2($List.map,toggle,updateItems(model.matchedItems));
-                 case "Enter Remove": return A2($List.filter,function (i) {    return !_U.eq(i.id,_p14);},model.matchedItems);
+                 case "Enter Remove": return updateItems(A2($List.indexedMap,
+                   updateIndex,
+                   A2($List.filter,function (i) {    return !_U.eq(i.id,_p16);},model.matchedItems)));
+                 case "Enter Clear": return updateItems(A2($List.indexedMap,
+                   updateIndex,
+                   A2($List.filter,function (_p13) {    return $Basics.not(function (_) {    return _.done;}(_p13));},model.matchedItems)));
                  default: return updateItems(model.matchedItems);}
            }()
            ,showActions: function () {
-              var _p12 = $Basics.toString(_p13);
-              switch (_p12)
+              var _p14 = $Basics.toString(_p15);
+              switch (_p14)
               {case "Esc": return false;
                  case "Enter Done": return false;
                  case "Enter Remove": return false;
+                 case "Enter Clear": return false;
                  default: return true;}
            }()});}
    });
