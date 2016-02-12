@@ -157,21 +157,18 @@ update action model =
                         case (toString act) of
                             "Esc" -> model.index
                             "Enter Done" -> model.index
-                            "Enter Undo" -> 0
                             "Enter Remove" -> 0
                             _ -> model.index,
                     string =
                         case (toString act) of
                             "Esc" -> model.string
                             "Enter Done" -> ""
-                            "Enter Undo" -> ""
                             "Enter Remove" -> ""
                             _ -> model.string,
                     items =
                         case (toString act) of
                             "Esc" -> updateItems model.items
                             "Enter Done" -> List.map toggle (updateItems model.items)
-                            "Enter Undo" -> List.map toggle (updateItems model.items)
                             "Enter Remove" ->
                                 List.indexedMap
                                     updateIndex
@@ -181,7 +178,6 @@ update action model =
                         case (toString act) of
                             "Esc" -> updateItems model.matchedItems
                             "Enter Done" -> List.map toggle (updateItems model.matchedItems)
-                            "Enter Undo" -> List.map toggle (updateItems model.matchedItems)
                             "Enter Remove" ->
                                 List.filter (\i -> i.id /= id) model.matchedItems
                             _ -> updateItems model.matchedItems,
@@ -189,7 +185,6 @@ update action model =
                         case (toString act) of
                             "Esc" -> False
                             "Enter Done" -> False
-                            "Enter Undo" -> False
                             "Enter Remove" -> False
                             _ -> True
                 }
@@ -281,9 +276,9 @@ actions =
 
 
 -- outgoing
-port modelLogger : Signal Model
-port modelLogger =
-    Signal.map (Debug.log "") model
+--port modelLogger : Signal Model
+--port modelLogger =
+    --Signal.map (Debug.log "") model
 
 
 port focus : Signal String
@@ -296,7 +291,6 @@ port focus =
                     "Esc" -> True
                     "Enter Done" -> True
                     "Enter Remove" -> True
-                    "Enter Undo" -> True
                     _ -> False
               _ -> False
 
@@ -308,7 +302,6 @@ port focus =
                         "Esc" -> "ItemList Esc"
                         "Enter Done" -> "ItemList Enter"
                         "Enter Remove" -> "ItemList Enter"
-                        "Enter Undo" -> "ItemList Enter"
                         _ -> ""
                 _ -> ""
 

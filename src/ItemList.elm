@@ -44,7 +44,6 @@ init =
 items : List Item
 items =
     [ newItem "Done" 0 0
-    , newItem "Undo" 1 1
     , newItem "Remove" 2 2
     ]
 
@@ -68,7 +67,7 @@ type Action
     | Esc
 
 
-type EnterAction = Done | Remove | Undo
+type EnterAction = Done | Remove
 
 
 matches : String -> List Item -> List Item
@@ -180,8 +179,8 @@ item address model isDone item =
         paddingLeft = if selected then "1.294rem" else ""
         selected = item.index == model.index
         itemDesc =
-            if item.desc == "Undo" then
-                if isDone then item.desc else ""
+            if item.desc == "Done" then
+                if isDone then "Undo" else "Done"
             else item.desc
 
     in
@@ -215,7 +214,6 @@ keyHandler model code =
             in
                 if selected.desc == "Done" then Enter Done
                 else if selected.desc == "Remove" then Enter Remove
-                else if selected.desc == "Undo" then Enter Undo
                 else Enter Done
         40 -> Down
         38 -> Up
