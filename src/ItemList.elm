@@ -78,7 +78,7 @@ matches str items =
                 |> Regex.regex
                 |> Regex.caseInsensitive
     in
-        List.filter contains items
+        if String.isEmpty str then [] else List.filter contains items
 
 
 isMatch : Model -> Bool
@@ -141,7 +141,9 @@ view address model =
     let items =
             if isMatch model then
                 List.indexedMap update (matches model.string model.items)
+            else if strEmpty model then model.items
             else []
+
         update i item = { item | index = i }
     in
         div

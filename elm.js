@@ -11046,7 +11046,7 @@ Elm.ItemList.make = function (_elm) {
       },
       $String.toList(A2($String.join,"",A2($String.split," ",str)))))));
       var contains = function (item) {    return A2($Regex.contains,regex,item.desc);};
-      return A2($List.filter,contains,items);
+      return $String.isEmpty(str) ? _U.list([]) : A2($List.filter,contains,items);
    });
    var isMatch = function (model) {    return $Basics.not($List.isEmpty(A2(matches,model.string,model.items)));};
    var addNot = function (model) {    return strEmpty(model) || isMatch(model);};
@@ -11079,7 +11079,7 @@ Elm.ItemList.make = function (_elm) {
    };
    var view = F2(function (address,model) {
       var update = F2(function (i,item) {    return _U.update(item,{index: i});});
-      var items = isMatch(model) ? A2($List.indexedMap,update,A2(matches,model.string,model.items)) : _U.list([]);
+      var items = isMatch(model) ? A2($List.indexedMap,update,A2(matches,model.string,model.items)) : strEmpty(model) ? model.items : _U.list([]);
       return A2($Html.div,
       _U.list([$Html$Attributes.$class("actions")]),
       _U.list([A2($Html.input,
@@ -11171,7 +11171,7 @@ Elm.Main.make = function (_elm) {
       },
       $String.toList(A2($String.join,"",A2($String.split," ",str)))))));
       var contains = function (item) {    return A2($Regex.contains,regex,item.desc);};
-      return A2($List.filter,contains,items);
+      return $String.isEmpty(str) ? _U.list([]) : A2($List.filter,contains,items);
    });
    var isMatch = function (model) {    return $Basics.not($List.isEmpty(A2(matches,model.string,model.items)));};
    var addNot = function (model) {    return strEmpty(model) || isMatch(model);};
@@ -11207,7 +11207,7 @@ Elm.Main.make = function (_elm) {
    };
    var view = F2(function (address,model) {
       var update = F2(function (i,item) {    return _U.update(item,{index: i});});
-      var items = isMatch(model) ? A2($List.indexedMap,update,A2(matches,model.string,model.items)) : _U.list([]);
+      var items = isMatch(model) ? A2($List.indexedMap,update,A2(matches,model.string,model.items)) : strEmpty(model) ? model.items : _U.list([]);
       return A2($Html.div,
       _U.list([]),
       _U.list([A2($Html.input,
