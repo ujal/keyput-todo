@@ -106,7 +106,8 @@ update action model =
                 { model |
                     string = str,
                     index = if isMatch model then 0 else model.index,
-                    matchedItems = List.indexedMap update (matches str model.items)
+                    matchedItems = List.indexedMap update (matches str model.items),
+                    showActions = False
                 }
 
         Enter ->
@@ -124,7 +125,8 @@ update action model =
 
         Up ->
             { model |
-                index = Basics.max (model.index - 1) 0
+                index = Basics.max (model.index - 1) 0,
+                showActions = False
             }
 
         Down ->
@@ -135,7 +137,8 @@ update action model =
                     index =
                         if isMatch model
                         then Basics.min (model.index + 1) (matchesLength - 1)
-                        else Basics.min (model.index + 1) (itemLength - 1)
+                        else Basics.min (model.index + 1) (itemLength - 1),
+                    showActions = False
                 }
 
         Esc ->

@@ -11106,7 +11106,7 @@ Elm.ItemList.make = function (_elm) {
               _U.list([]))
               ,A2($Html.ul,_U.list([$Html$Attributes.$class("list")]),A2($List.map,A3(item,address,model,isDone),items))]));
    });
-   var items = _U.list([A3(newItem,"Done",0,0),A3(newItem,"Remove",1,1),A3(newItem,"--",2,2),A3(newItem,"Clear",3,3)]);
+   var items = _U.list([A3(newItem,"Done",0,0),A3(newItem,"Remove",1,1),A3(newItem,"––",2,2),A3(newItem,"Clear",3,3)]);
    var init = {string: "",items: items,matchedItems: _U.list([]),uid: 0,index: 0};
    var Item = F3(function (a,b,c) {    return {desc: a,id: b,index: c};});
    var Model = F5(function (a,b,c,d,e) {    return {string: a,items: b,matchedItems: c,uid: d,index: e};});
@@ -11330,16 +11330,18 @@ Elm.Main.make = function (_elm) {
       {case "NoOp": return model;
          case "UpdateString": var _p7 = _p6._0;
            var update = F2(function (i,item) {    return _U.update(item,{index: i});});
-           return _U.update(model,{string: _p7,index: isMatch(model) ? 0 : model.index,matchedItems: A2($List.indexedMap,update,A2(matches,_p7,model.items))});
+           return _U.update(model,
+           {string: _p7,index: isMatch(model) ? 0 : model.index,matchedItems: A2($List.indexedMap,update,A2(matches,_p7,model.items)),showActions: false});
          case "Enter": return _U.update(model,
            {uid: addNot(model) ? model.uid : model.uid + 1
            ,string: isMatch(model) ? model.string : ""
            ,items: addNot(model) ? model.items : A2($Basics._op["++"],model.items,_U.list([A3(newItem,model.string,model.uid,$List.length(model.items))]))
            ,showActions: addNot(model) ? true : false});
-         case "Up": return _U.update(model,{index: A2($Basics.max,model.index - 1,0)});
+         case "Up": return _U.update(model,{index: A2($Basics.max,model.index - 1,0),showActions: false});
          case "Down": var itemLength = $List.length(model.items);
            var matchesLength = $List.length(A2(matches,model.string,model.items));
-           return _U.update(model,{index: isMatch(model) ? A2($Basics.min,model.index + 1,matchesLength - 1) : A2($Basics.min,model.index + 1,itemLength - 1)});
+           return _U.update(model,
+           {index: isMatch(model) ? A2($Basics.min,model.index + 1,matchesLength - 1) : A2($Basics.min,model.index + 1,itemLength - 1),showActions: false});
          case "Esc": return _U.update(model,{showActions: false,string: model.showActions ? model.string : ""});
          default: var _p16 = _p6._0;
            var _p15 = _p6._1;

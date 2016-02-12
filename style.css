@@ -1,5 +1,7 @@
 @import 'normalize.css';
 
+html { overflow-y: scroll; }
+
 html, body {
   height: 97%;
 }
