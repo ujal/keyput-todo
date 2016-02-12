@@ -18,6 +18,7 @@ import Time
 type alias Model =
     { string : String
     , items : List Item
+    , matchedItems : List Item
     , uid : Int
     , index : Int
     }
@@ -34,6 +35,7 @@ init : Model
 init =
     { string = ""
     , items = items
+    , matchedItems = []
     , uid = 0
     , index = 0
     }
@@ -99,10 +101,13 @@ update action model =
         NoOp -> model
 
         UpdateString str ->
-            { model |
-                string = str,
-                index = if isMatch model then 0 else model.index
-            }
+            let update i item = { item | index = i }
+            in
+                { model |
+                    string = str,
+                    index = if isMatch model then 0 else model.index,
+                    matchedItems = List.indexedMap update (matches str model.items)
+                }
 
         Enter ->
             { model |
@@ -139,8 +144,7 @@ update action model =
 view : Address Action -> Model -> Html
 view address model =
     let items =
-            if isMatch model then
-                List.indexedMap update (matches model.string model.items)
+            if isMatch model then model.matchedItems
             else if strEmpty model then model.items
             else []
 
