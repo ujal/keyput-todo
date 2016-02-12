@@ -203,7 +203,8 @@ view address model =
         div
             []
             [ input
-                [ value model.string
+                [ autofocus True
+                , value model.string
                 , onKeyDown address keyHandler
                 , on "input" targetValue (Signal.message address << UpdateString)
                 , class "input-main"

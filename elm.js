@@ -11279,7 +11279,8 @@ Elm.Main.make = function (_elm) {
       return A2($Html.div,
       _U.list([]),
       _U.list([A2($Html.input,
-              _U.list([$Html$Attributes.value(model.string)
+              _U.list([$Html$Attributes.autofocus(true)
+                      ,$Html$Attributes.value(model.string)
                       ,A2($Html$Events.onKeyDown,address,keyHandler)
                       ,A3($Html$Events.on,"input",$Html$Events.targetValue,function (_p1) {    return A2($Signal.message,address,UpdateString(_p1));})
                       ,$Html$Attributes.$class("input-main")]),
