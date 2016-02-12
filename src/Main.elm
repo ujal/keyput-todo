@@ -28,7 +28,7 @@ type alias Item =
     { desc : String
     , id : Int
     , index : Int
-    , actions : ItemList.Model
+    , itemActions : ItemList.Model
     }
 
 
@@ -47,7 +47,7 @@ newItem desc id index =
     { desc = desc
     , id = id
     , index = index
-    , actions = ItemList.init
+    , itemActions = ItemList.init
     }
 
 
@@ -60,7 +60,7 @@ type Action
     | Up
     | Down
     | Esc
-    | ItemList ItemList.Action
+    | ItemList Int ItemList.Action
 
 
 matches : String -> List Item -> List Item
@@ -125,10 +125,9 @@ update action model =
             in
                 { model |
                     index =
-                        if isMatch model then
-                            Basics.min (model.index + 1) (matchesLength - 1)
-                        else
-                            Basics.min (model.index + 1) (itemLength - 1)
+                        if isMatch model
+                        then Basics.min (model.index + 1) (matchesLength - 1)
+                        else Basics.min (model.index + 1) (itemLength - 1)
                 }
 
         Esc ->
@@ -136,16 +135,17 @@ update action model =
                 showActions = False,
                 string = if model.showActions then model.string else ""}
 
-        ItemList act ->
+        ItemList id act ->
             let update item =
-                    if item.index == model.index then
-                        { item | actions = ItemList.update act item.actions }
+                    if item.index == id then
+                        { item | itemActions = ItemList.update act item.itemActions }
                     else item
             in
                 { model |
                     items = List.map update model.items,
                     showActions =
-                        if (toString act) == "Esc" then False else True
+                        if (toString act) == "Esc" ||
+                            (toString act) == "Enter" then False else True
                 }
 
 
@@ -182,8 +182,8 @@ item address model item  =
         borderLeft  = if selected then ".6472rem solid #333" else ""
         paddingLeft = if selected then "1.294rem" else ""
         displayActions = if selected && model.showActions then "block" else "none"
-        actions =
-            ItemList.view (Signal.forwardTo address ItemList) item.actions
+        itemActions =
+            ItemList.view (Signal.forwardTo address (ItemList item.id)) item.itemActions
     in
         li
             [ style [ ("font-weight", fontWeight)
@@ -192,7 +192,7 @@ item address model item  =
                     ]
             ]
             [ text item.desc
-            , div [ style [ ("display", displayActions) ] ] [ actions ]
+            , div [ style [ ("display", displayActions) ] ] [ itemActions ]
             ]
 
 
@@ -241,13 +241,22 @@ port focus =
             case act of
               Enter -> True
               Esc -> True
-              ItemList act -> if (toString act) == "Esc" then True else False
+              ItemList _ act ->
+                  if (toString act) == "Esc" ||
+                      (toString act) == "Enter" then True else False
               _ -> False
+
+        toActionString act =
+            case act of
+                Enter -> "Enter"
+                Esc -> "Esc"
+                ItemList _ act -> "ItemList " ++ (toString act)
+                _ -> ""
 
     in
         actions.signal
           |> Signal.filter needsFocus Esc
-          |> Signal.map toString
+          |> Signal.map toActionString
 
 
 -- interactions with localStorage to save the model

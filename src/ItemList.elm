@@ -106,12 +106,10 @@ update action model =
 
         Enter ->
             { model |
-                uid = if addNot model then model.uid else model.uid + 1,
-                string = if isMatch model then model.string else "",
-                items =
-                    if addNot model then model.items
-                    else model.items ++ [newItem model.string model.uid model.uid]
-                }
+                string = "",
+                index = 0
+            }
+
         Up ->
             { model |
                 index = Basics.max (model.index - 1) 0
@@ -129,7 +127,10 @@ update action model =
                 }
 
         Esc ->
-            { model | index = 0}
+            { model |
+                index = 0,
+                string = ""
+            }
 
 
 
