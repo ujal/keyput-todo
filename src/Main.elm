@@ -240,7 +240,9 @@ item address model item =
                     , ("padding-left", paddingLeft)
                     ]
             ]
-            [ div [ style [("text-decoration", decor)]] [text item.desc]
+            [ div
+                [ style [("text-decoration", decor)] ]
+                [ text item.desc ]
             , div
                 [ style [ ("display", displayActions) ] ]
                 [ itemActions ]
