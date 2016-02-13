@@ -16,24 +16,29 @@ var storedState = localStorage.getItem('keyput-state');
 var startingState = storedState ? JSON.parse(storedState) : null;
 var keyput = Elm.fullscreen(Elm.Main, { getStorage: startingState });
 
+function focusVisible(selector) {
+  var $selector = document.querySelectorAll(selector);
+  for (var i = 0; i < $selector.length; i++) {
+    if ($selector[i] && $selector[i].offsetParent !== null) {
+      $selector[i].focus();
+    }
+  }
+}
+
 keyput.ports.focus.subscribe(function(action) {
-    setTimeout(function(){
-        if (action === 'Enter') {
-            var $inputs = document.querySelectorAll('.input-actions');
-            for (var i = 0; i < $inputs.length; i++) {
-                if ($inputs[i] && $inputs[i].offsetParent !== null) {
-                    $inputs[i].focus();
-                }
-            }
-        } else if (action == "ItemList Esc" || action == "ItemList Enter") {
-            var $input = document.querySelector('.input-main');
-            $input.focus();
-        }
-    }, 20)
+  setTimeout(function(){
+    if (action === 'Enter') {
+      focusVisible('.input-actions')
+    } else if (action == "ItemList Esc" || action == "ItemList Enter") {
+      focusVisible('.input-main')
+    } else if (action == "ItemList Edit") {
+      focusVisible('.input-edit')
+    }
+  }, 20)
 });
 
 keyput.ports.setStorage.subscribe(function(state) {
-    localStorage.setItem('keyput-state', JSON.stringify(state));
+  localStorage.setItem('keyput-state', JSON.stringify(state));
 });
 </script>
 

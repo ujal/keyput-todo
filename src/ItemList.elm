@@ -42,9 +42,10 @@ init =
 items : List Item
 items =
     [ newItem "Check" 0 0
-    , newItem "Remove" 1 1
-    , newItem "––" 2 2
-    , newItem "Clear" 3 3
+    , newItem "Edit" 1 1
+    , newItem "Remove" 2 2
+    , newItem "––" 3 3
+    , newItem "Clear" 4 4
     ]
 
 
@@ -72,7 +73,7 @@ type Action
     | Esc
 
 
-type EnterAction = Check | Remove | Clear
+type EnterAction = Check | Remove | Clear | Edit
 
 
 matches : String -> List Item -> List Item
@@ -164,7 +165,6 @@ view address model =
                     |> List.indexedMap updateIndex
             else if strEmpty model then model.items
             else []
-
         update i item = { item | index = i }
     in
         div
@@ -220,10 +220,10 @@ keyHandler model code =
                         |> List.indexedMap updateIndex
                         |> select model.index
                 else select model.index model.items
-                _ = Debug.log "" selected
                 updateIndex i item = { item | index = i }
             in
                 if selected.desc == "Check" then Enter Check
+                else if selected.desc == "Edit" then Enter Edit
                 else if selected.desc == "Remove" then Enter Remove
                 else if selected.desc == "Clear" then Enter Clear
                 else NoOp

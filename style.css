@@ -22,6 +22,10 @@ html, body {
   font-weight: normal;
 }
 
+.input-edit {
+  width: 90%;
+}
+
 ul {
   display: block;
   width: 80%;

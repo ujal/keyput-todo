@@ -21,6 +21,7 @@ type alias Model =
     , uid : Int
     , index : Int
     , showActions : Bool
+    , showEdit : Bool
     }
 
 
@@ -40,6 +41,7 @@ init =
     , uid = 0
     , index = 0
     , showActions = False
+    , showEdit = False
     }
 
 
@@ -58,6 +60,9 @@ newItem desc id index =
 type Action
     = NoOp
     | UpdateString String
+    | EditItem Int String
+    | EditEnter
+    | EditEsc
     | Enter
     | Up
     | Down
@@ -108,6 +113,17 @@ update action model =
                     index = if isMatch model then 0 else model.index,
                     showActions = False
                 }
+
+        EditItem id str ->
+            let update item = if item.id == id then { item | desc = str } else item
+            in
+                { model |
+                    items = List.map update model.items
+                }
+
+        EditEnter -> { model | showEdit = False }
+
+        EditEsc -> { model | showEdit = False }
 
         Enter ->
             { model |
@@ -189,7 +205,17 @@ update action model =
                             "Enter Check" -> False
                             "Enter Remove" -> False
                             "Enter Clear" -> False
-                            _ -> True
+                            "Enter Edit" -> False
+                            _ -> True,
+                    showEdit =
+                        case (toString act) of
+                            "Esc" -> False
+                            "Enter Check" -> False
+                            "Enter Remove" -> False
+                            "Enter Clear" -> False
+                            "Enter Edit" -> True
+                            _ -> False
+
                 }
 
 
@@ -228,6 +254,8 @@ item address model item =
         borderLeft  = if selected then ".6472rem solid #333" else ""
         paddingLeft = if selected then "1.294rem" else ""
         displayActions = if selected && model.showActions then "block" else "none"
+        displayEdit = if selected && model.showEdit then "block" else "none"
+        displayItem = if selected && model.showEdit then "none" else "block"
         decor = if item.done then "line-through" else "none"
         itemActions =
             ItemList.view
@@ -241,11 +269,28 @@ item address model item =
                     ]
             ]
             [ div
-                [ style [("text-decoration", decor)] ]
+                [ style [ ("text-decoration", decor)
+                        , ("display", displayItem)
+                        ]]
                 [ text item.desc ]
             , div
                 [ style [ ("display", displayActions) ] ]
                 [ itemActions ]
+            , div
+                [ style [ ("display", displayEdit)
+                        , ("font-weight", "normal")
+                        ] ]
+                [ input
+                    [ class "input-edit"
+                    , value item.desc
+                    , onKeyDown address editHandler
+                    , on
+                        "input"
+                        targetValue
+                        (Signal.message address << EditItem item.id)
+                    ]
+                    []
+                ]
             ]
 
 
@@ -256,6 +301,14 @@ keyHandler code =
         40 -> Down
         38 -> Up
         27 -> Esc
+        _ -> NoOp
+
+
+editHandler : Int -> Action
+editHandler code =
+    case code of
+        13 -> EditEnter
+        27 -> EditEsc
         _ -> NoOp
 
 
@@ -293,24 +346,30 @@ port focus =
     let needsFocus act =
             case act of
               Enter -> True
+              EditEnter -> True
+              EditEsc -> True
               ItemList _ act ->
                 case (toString act) of
                     "Esc" -> True
                     "Enter Check" -> True
                     "Enter Remove" -> True
                     "Enter Clear" -> True
+                    "Enter Edit" -> True
                     _ -> False
               _ -> False
 
         toActionString act =
             case act of
                 Enter -> "Enter"
+                EditEnter -> "ItemList Enter"
+                EditEsc -> "ItemList Enter"
                 ItemList _ act ->
                     case (toString act) of
                         "Esc" -> "ItemList Esc"
                         "Enter Check" -> "ItemList Enter"
                         "Enter Remove" -> "ItemList Enter"
                         "Enter Clear" -> "ItemList Enter"
+                        "Enter Edit" -> "ItemList Edit"
                         _ -> ""
                 _ -> ""
 
