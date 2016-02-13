@@ -43,7 +43,7 @@ init =
 
 items : List Item
 items =
-    [ newItem "Done" 0 0
+    [ newItem "Check" 0 0
     , newItem "Remove" 1 1
     , newItem "––" 2 2
     , newItem "Clear" 3 3
@@ -69,7 +69,7 @@ type Action
     | Esc
 
 
-type EnterAction = Done | Remove | Clear
+type EnterAction = Check | Remove | Clear
 
 
 matches : String -> List Item -> List Item
@@ -180,10 +180,6 @@ item address model isDone item =
         borderLeft = if selected then ".6472rem solid #333" else ""
         paddingLeft = if selected then "1.294rem" else ""
         selected = item.index == model.index
-        itemDesc =
-            if item.desc == "Done" then
-                if isDone then "Undo" else "Done"
-            else item.desc
 
     in
         li
@@ -192,7 +188,7 @@ item address model isDone item =
                     , ("padding-left", paddingLeft)
                     ]
             ]
-            [text itemDesc]
+            [text item.desc]
 
 
 
@@ -201,7 +197,7 @@ select index items =
     let filterf item = item.index == index
     in
         Maybe.withDefault
-            (newItem "Done" 0 0)
+            (newItem "Check" 0 0)
             (List.head (List.filter filterf items))
 
 
@@ -214,10 +210,10 @@ keyHandler model code =
                     then select model.index model.items
                     else select model.index model.matchedItems
             in
-                if selected.desc == "Done" then Enter Done
+                if selected.desc == "Check" then Enter Check
                 else if selected.desc == "Remove" then Enter Remove
                 else if selected.desc == "Clear" then Enter Clear
-                else Enter Done
+                else NoOp
         40 -> Down
         38 -> Up
         27 -> Esc
