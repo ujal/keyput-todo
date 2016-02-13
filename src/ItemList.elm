@@ -213,13 +213,12 @@ keyHandler model code =
     case code of
         13 ->
             let selected =
-                if isMatch model
-                then
-                    model.items
-                        |> matches model.string
-                        |> List.indexedMap updateIndex
-                        |> select model.index
-                else select model.index model.items
+                    if isMatch model then
+                        model.items
+                            |> matches model.string
+                            |> List.indexedMap updateIndex
+                            |> select model.index
+                    else select model.index model.items
                 updateIndex i item = { item | index = i }
             in
                 if selected.desc == "Check" then Enter Check
