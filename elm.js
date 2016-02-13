@@ -11036,6 +11036,7 @@ Elm.ItemList.make = function (_elm) {
                                               ,{ctor: "_Tuple2",_0: "padding-left",_1: paddingLeft}]))]),
       _U.list([$Html.text(item.desc)]));
    });
+   var updateIndex = F2(function (i,item) {    return _U.update(item,{index: i});});
    var strEmpty = function (model) {    return $String.isEmpty(model.string);};
    var matches = F2(function (str,items) {
       var regex = $Regex.caseInsensitive($Regex.regex(A2($String.join,
@@ -11096,7 +11097,7 @@ Elm.ItemList.make = function (_elm) {
    });
    var view = F2(function (address,model) {
       var update = F2(function (i,item) {    return _U.update(item,{index: i});});
-      var items = isMatch(model) ? A2(matches,model.string,model.items) : strEmpty(model) ? model.items : _U.list([]);
+      var items = isMatch(model) ? A2($List.indexedMap,updateIndex,A2(matches,model.string,model.items)) : strEmpty(model) ? model.items : _U.list([]);
       return A2($Html.div,
       _U.list([$Html$Attributes.$class("actions")]),
       _U.list([A2($Html.input,
