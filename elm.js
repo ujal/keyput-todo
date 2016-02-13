@@ -11065,6 +11065,7 @@ Elm.ItemList.make = function (_elm) {
            return _U.update(model,{index: isMatch(model) ? A2($Basics.min,model.index + 1,matchesLength - 1) : A2($Basics.min,model.index + 1,itemLength - 1)});
          default: return _U.update(model,{index: 0,string: ""});}
    });
+   var CheckAll = {ctor: "CheckAll"};
    var Edit = {ctor: "Edit"};
    var Clear = {ctor: "Clear"};
    var Remove = {ctor: "Remove"};
@@ -11089,7 +11090,7 @@ Elm.ItemList.make = function (_elm) {
            model.index,
            model.items);
            return _U.eq(selected.desc,"Check") ? Enter(Check) : _U.eq(selected.desc,"Edit") ? Enter(Edit) : _U.eq(selected.desc,
-           "Remove") ? Enter(Remove) : _U.eq(selected.desc,"Clear") ? Enter(Clear) : NoOp;
+           "Remove") ? Enter(Remove) : _U.eq(selected.desc,"Clear All") ? Enter(Clear) : _U.eq(selected.desc,"Check All") ? Enter(CheckAll) : NoOp;
          case 40: return Down;
          case 38: return Up;
          case 27: return Esc;
@@ -11109,7 +11110,12 @@ Elm.ItemList.make = function (_elm) {
               _U.list([]))
               ,A2($Html.ul,_U.list([$Html$Attributes.$class("list")]),A2($List.map,A2(item,address,model),items))]));
    });
-   var items = _U.list([A3(newItem,"Check",0,0),A3(newItem,"Edit",1,1),A3(newItem,"Remove",2,2),A3(newItem,"––",3,3),A3(newItem,"Clear",4,4)]);
+   var items = _U.list([A3(newItem,"Check",0,0)
+                       ,A3(newItem,"Edit",1,1)
+                       ,A3(newItem,"Remove",2,2)
+                       ,A3(newItem,"––",3,3)
+                       ,A3(newItem,"Clear All",4,4)
+                       ,A3(newItem,"Check All",5,5)]);
    var init = {string: "",items: items,uid: 0,index: 0};
    var Item = F3(function (a,b,c) {    return {desc: a,id: b,index: c};});
    var Model = F4(function (a,b,c,d) {    return {string: a,items: b,uid: c,index: d};});
@@ -11273,6 +11279,7 @@ Elm.Main.make = function (_elm) {
               switch (_p5)
               {case "Esc": return "ItemList Esc";
                  case "Enter Check": return "ItemList Enter";
+                 case "Enter CheckAll": return "ItemList Enter";
                  case "Enter Remove": return "ItemList Enter";
                  case "Enter Clear": return "ItemList Enter";
                  case "Enter Edit": return "ItemList Edit";
@@ -11289,6 +11296,7 @@ Elm.Main.make = function (_elm) {
               switch (_p7)
               {case "Esc": return true;
                  case "Enter Check": return true;
+                 case "Enter CheckAll": return true;
                  case "Enter Remove": return true;
                  case "Enter Clear": return true;
                  case "Enter Edit": return true;
@@ -11321,6 +11329,7 @@ Elm.Main.make = function (_elm) {
          case "Esc": return _U.update(model,{showActions: false,string: model.showActions ? model.string : ""});
          default: var _p16 = _p8._0;
            var _p15 = _p8._1;
+           var checkall = function (item) {    return _U.update(item,{done: true});};
            var toggle = function (i) {    return _U.eq(i.id,_p16) ? _U.update(i,{done: $Basics.not(i.done)}) : i;};
            var update = function (item) {    return _U.eq(item.id,_p16) ? _U.update(item,{itemActions: A2($ItemList.update,_p15,item.itemActions)}) : item;};
            var updateItems = function (items) {    return A2($List.map,update,items);};
@@ -11332,6 +11341,7 @@ Elm.Main.make = function (_elm) {
                  case "Enter Check": return model.index;
                  case "Enter Remove": return 0;
                  case "Enter Clear": return 0;
+                 case "Enter CheckAll": return 0;
                  default: return model.index;}
            }()
            ,string: function () {
@@ -11341,6 +11351,7 @@ Elm.Main.make = function (_elm) {
                  case "Enter Check": return "";
                  case "Enter Remove": return "";
                  case "Enter Clear": return "";
+                 case "Enter CheckAll": return "";
                  default: return model.string;}
            }()
            ,items: function () {
@@ -11348,6 +11359,7 @@ Elm.Main.make = function (_elm) {
               switch (_p11)
               {case "Esc": return updateItems(model.items);
                  case "Enter Check": return A2($List.map,toggle,updateItems(model.items));
+                 case "Enter CheckAll": return A2($List.map,checkall,updateItems(model.items));
                  case "Enter Remove": return A2($List.indexedMap,
                    updateIndex,
                    A2($List.filter,function (i) {    return !_U.eq(i.id,_p16);},updateItems(model.items)));
@@ -11364,6 +11376,7 @@ Elm.Main.make = function (_elm) {
                  case "Enter Remove": return false;
                  case "Enter Clear": return false;
                  case "Enter Edit": return false;
+                 case "Enter CheckAll": return false;
                  default: return true;}
            }()
            ,showEdit: function () {

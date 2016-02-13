@@ -45,7 +45,8 @@ items =
     , newItem "Edit" 1 1
     , newItem "Remove" 2 2
     , newItem "––" 3 3
-    , newItem "Clear" 4 4
+    , newItem "Clear All" 4 4
+    , newItem "Check All" 5 5
     ]
 
 
@@ -73,7 +74,7 @@ type Action
     | Esc
 
 
-type EnterAction = Check | Remove | Clear | Edit
+type EnterAction = Check | Remove | Clear | Edit | CheckAll
 
 
 matches : String -> List Item -> List Item
@@ -224,7 +225,8 @@ keyHandler model code =
                 if selected.desc == "Check" then Enter Check
                 else if selected.desc == "Edit" then Enter Edit
                 else if selected.desc == "Remove" then Enter Remove
-                else if selected.desc == "Clear" then Enter Clear
+                else if selected.desc == "Clear All" then Enter Clear
+                else if selected.desc == "Check All" then Enter CheckAll
                 else NoOp
         40 -> Down
         38 -> Up

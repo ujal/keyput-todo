@@ -168,6 +168,7 @@ update action model =
                     else item
                 updateItems items = List.map update items
                 toggle i = if i.id == id then { i | done = not i.done } else i
+                checkall item = { item | done = True }
             in
                 { model |
                     index =
@@ -176,6 +177,7 @@ update action model =
                             "Enter Check" -> model.index
                             "Enter Remove" -> 0
                             "Enter Clear" -> 0
+                            "Enter CheckAll" -> 0
                             _ -> model.index,
                     string =
                         case (toString act) of
@@ -183,11 +185,15 @@ update action model =
                             "Enter Check" -> ""
                             "Enter Remove" -> ""
                             "Enter Clear" -> ""
+                            "Enter CheckAll" -> ""
                             _ -> model.string,
                     items =
                         case (toString act) of
                             "Esc" -> updateItems model.items
-                            "Enter Check" -> List.map toggle (updateItems model.items)
+                            "Enter Check" ->
+                                List.map toggle (updateItems model.items)
+                            "Enter CheckAll" ->
+                                List.map checkall (updateItems model.items)
                             "Enter Remove" ->
                                 model.items
                                     |> updateItems
@@ -206,6 +212,7 @@ update action model =
                             "Enter Remove" -> False
                             "Enter Clear" -> False
                             "Enter Edit" -> False
+                            "Enter CheckAll" -> False
                             _ -> True,
                     showEdit =
                         case (toString act) of
@@ -352,6 +359,7 @@ port focus =
                 case (toString act) of
                     "Esc" -> True
                     "Enter Check" -> True
+                    "Enter CheckAll" -> True
                     "Enter Remove" -> True
                     "Enter Clear" -> True
                     "Enter Edit" -> True
@@ -367,6 +375,7 @@ port focus =
                     case (toString act) of
                         "Esc" -> "ItemList Esc"
                         "Enter Check" -> "ItemList Enter"
+                        "Enter CheckAll" -> "ItemList Enter"
                         "Enter Remove" -> "ItemList Enter"
                         "Enter Clear" -> "ItemList Enter"
                         "Enter Edit" -> "ItemList Edit"
