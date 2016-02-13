@@ -18,7 +18,6 @@ import ItemList
 type alias Model =
     { string : String
     , items : List Item
-    , matchedItems : List Item
     , uid : Int
     , index : Int
     , showActions : Bool
@@ -38,7 +37,6 @@ init : Model
 init =
     { string = ""
     , items = []
-    , matchedItems = []
     , uid = 0
     , index = 0
     , showActions = False
@@ -106,7 +104,6 @@ update action model =
                 { model |
                     string = str,
                     index = if isMatch model then 0 else model.index,
-                    matchedItems = List.indexedMap update (matches str model.items),
                     showActions = False
                 }
 
@@ -175,27 +172,16 @@ update action model =
                             "Esc" -> updateItems model.items
                             "Enter Check" -> List.map toggle (updateItems model.items)
                             "Enter Remove" ->
-                                (List.filter (\i -> i.id /= id) model.items)
-                                    |> List.indexedMap updateIndex
+                                model.items
                                     |> updateItems
+                                    |> List.filter (\i -> i.id /= id)
+                                    |> List.indexedMap updateIndex
                             "Enter Clear" ->
-                                (List.filter (not << .done) model.items)
-                                    |> List.indexedMap updateIndex
+                                model.items
                                     |> updateItems
+                                    |> List.filter (not << .done)
+                                    |> List.indexedMap updateIndex
                             _ -> updateItems model.items,
-                    matchedItems =
-                        case (toString act) of
-                            "Esc" -> updateItems model.matchedItems
-                            "Enter Check" -> List.map toggle (updateItems model.matchedItems)
-                            "Enter Remove" ->
-                                (List.filter (\i -> i.id /= id) model.matchedItems)
-                                    |> List.indexedMap updateIndex
-                                    |> updateItems
-                            "Enter Clear" ->
-                                (List.filter (not << .done) model.matchedItems)
-                                    |> List.indexedMap updateIndex
-                                    |> updateItems
-                            _ -> updateItems model.matchedItems,
                     showActions =
                         case (toString act) of
                             "Esc" -> False
@@ -212,7 +198,7 @@ update action model =
 view : Address Action -> Model -> Html
 view address model =
     let items =
-            if isMatch model then model.matchedItems
+            if isMatch model then matches model.string model.items
             else if strEmpty model then model.items
             else []
     in
@@ -232,7 +218,7 @@ view address model =
             ]
 
 item : Address Action -> Model -> Item -> Html
-item address model item  =
+item address model item =
     let selected    = item.index == model.index
         fontWeight  = if selected then "bold" else "normal"
         borderLeft  = if selected then ".6472rem solid #333" else ""
@@ -243,7 +229,6 @@ item address model item  =
             ItemList.view
                 (Signal.forwardTo address (ItemList item.id))
                 item.itemActions
-                item.done
     in
         li
             [ style [ ("font-weight", fontWeight)

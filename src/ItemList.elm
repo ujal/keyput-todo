@@ -1,4 +1,4 @@
-module ItemList (Model, init, Action, update, view) where
+module ItemList (Model, init, Action, update, view, Context) where
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -59,6 +59,11 @@ newItem desc id index =
 
 
 -- UPDATE
+
+type alias Context =
+    { actions : Signal.Address Action
+    , itemEnter : Signal.Address ()
+    }
 
 type Action
     = NoOp
@@ -150,8 +155,8 @@ update action model =
 
 -- VIEW
 
-view : Address Action -> Model -> Bool -> Html
-view address model isDone =
+view : Address Action -> Model -> Html
+view address model =
     let items =
             if isMatch model then model.matchedItems
             else if strEmpty model then model.items
@@ -171,16 +176,15 @@ view address model isDone =
                 []
             , ul
                 [ class "list" ]
-                (List.map (item address model isDone) items)
+                (List.map (item address model) items)
             ]
 
-item : Address Action -> Model -> Bool -> Item -> Html
-item address model isDone item =
+item : Address Action -> Model -> Item -> Html
+item address model item =
     let fontWeight = if selected then "bold" else "normal"
         borderLeft = if selected then ".6472rem solid #333" else ""
         paddingLeft = if selected then "1.294rem" else ""
         selected = item.index == model.index
-
     in
         li
             [ style [ ("font-weight", fontWeight)
