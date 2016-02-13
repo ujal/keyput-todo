@@ -18,7 +18,6 @@ import Time
 type alias Model =
     { string : String
     , items : List Item
-    , matchedItems : List Item
     , uid : Int
     , index : Int
     }
@@ -35,7 +34,6 @@ init : Model
 init =
     { string = ""
     , items = items
-    , matchedItems = []
     , uid = 0
     , index = 0
     }
@@ -115,8 +113,7 @@ update action model =
             in
                 { model |
                     string = str,
-                    index = if isMatch model then 0 else model.index,
-                    matchedItems = List.indexedMap update (matches str model.items)
+                    index = if isMatch model then 0 else model.index
                 }
 
         Enter _ ->
@@ -125,8 +122,7 @@ update action model =
                 { model |
                     string = "",
                     index = 0,
-                    items = List.indexedMap update model.items,
-                    matchedItems = List.indexedMap update model.matchedItems
+                    items = List.indexedMap update model.items
                 }
 
         Up ->
@@ -158,7 +154,7 @@ update action model =
 view : Address Action -> Model -> Html
 view address model =
     let items =
-            if isMatch model then model.matchedItems
+            if isMatch model then matches model.string model.items
             else if strEmpty model then model.items
             else []
 
@@ -210,9 +206,15 @@ keyHandler model code =
     case code of
         13 ->
             let selected =
-                    if List.isEmpty model.matchedItems
-                    then select model.index model.items
-                    else select model.index model.matchedItems
+                if isMatch model
+                then
+                    model.items
+                        |> matches model.string
+                        |> List.indexedMap updateIndex
+                        |> select model.index
+                else select model.index model.items
+                _ = Debug.log "" selected
+                updateIndex i item = { item | index = i }
             in
                 if selected.desc == "Check" then Enter Check
                 else if selected.desc == "Remove" then Enter Remove

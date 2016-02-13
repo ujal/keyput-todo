@@ -92,6 +92,8 @@ strEmpty model = String.isEmpty model.string
 addNot : Model -> Bool
 addNot model = strEmpty model || isMatch model
 
+updateIndex : Int -> Item -> Item
+updateIndex i item = { item | index = i }
 
 update : Action -> Model -> Model
 update action model =
@@ -150,7 +152,6 @@ update action model =
                     else item
                 updateItems items = List.map update items
                 toggle i = if i.id == id then { i | done = not i.done } else i
-                updateIndex i item = { item | index = i }
             in
                 { model |
                     index =
@@ -198,7 +199,10 @@ update action model =
 view : Address Action -> Model -> Html
 view address model =
     let items =
-            if isMatch model then matches model.string model.items
+            if isMatch model then
+                model.items
+                    |> matches model.string
+                    |> List.indexedMap updateIndex
             else if strEmpty model then model.items
             else []
     in
