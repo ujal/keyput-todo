@@ -41,10 +41,10 @@ init =
     { string = ""
     , items =
         [ newItem "a small but mighty todo app" 0 0
-        , newItem "type or search and press enter" 1 1
-        , newItem "to add, search or modify your todos" 2 2
+        , newItem "type or search and press enter to" 1 1
+        , newItem "add, search or modify your todos" 2 2
         , newItem "we add something only if not found" 3 3
-        , newItem "you got esc too" 4 4
+        , newItem "you got esc too - u know to esc" 4 4
         ]
     , uid = 4
     , index = 0
@@ -298,7 +298,7 @@ item address model item =
         itemDesc =
             if item.desc == "" then "#todo"
             else if item.note /= "" then ("❐ " ++ item.desc)
-            else ("– " ++ item.desc)
+            else ("" ++ item.desc)
         itemActions =
             ItemList.view
                 (Signal.forwardTo address (ItemList item.id))

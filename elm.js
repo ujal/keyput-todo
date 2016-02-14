@@ -11234,7 +11234,7 @@ Elm.Main.make = function (_elm) {
    var noteHandler = function (code) {    var _p2 = code;if (_p2 === 27) {    return EditNoteEsc;} else {    return NoOp;}};
    var item = F3(function (address,model,item) {
       var itemActions = A2($ItemList.view,A2($Signal.forwardTo,address,ItemList(item.id)),item.itemActions);
-      var itemDesc = _U.eq(item.desc,"") ? "#todo" : !_U.eq(item.note,"") ? A2($Basics._op["++"],"❐ ",item.desc) : A2($Basics._op["++"],"– ",item.desc);
+      var itemDesc = _U.eq(item.desc,"") ? "#todo" : !_U.eq(item.note,"") ? A2($Basics._op["++"],"❐ ",item.desc) : A2($Basics._op["++"],"",item.desc);
       var decor = item.done ? "line-through" : "none";
       var selected = _U.eq(item.index,model.index);
       var fontWeight = selected ? "bold" : "normal";
@@ -11434,10 +11434,10 @@ Elm.Main.make = function (_elm) {
    });
    var init = {string: ""
               ,items: _U.list([A3(newItem,"a small but mighty todo app",0,0)
-                              ,A3(newItem,"type or search and press enter",1,1)
-                              ,A3(newItem,"to add, search or modify your todos",2,2)
+                              ,A3(newItem,"type or search and press enter to",1,1)
+                              ,A3(newItem,"add, search or modify your todos",2,2)
                               ,A3(newItem,"we add something only if not found",3,3)
-                              ,A3(newItem,"you got esc too",4,4)])
+                              ,A3(newItem,"you got esc too - u know to esc",4,4)])
               ,uid: 4
               ,index: 0
               ,showActions: false
