@@ -25,6 +25,11 @@ function focusVisible(selector) {
   }
 }
 
+document.body.addEventListener('click', function(){
+  focusVisible('.input-main');
+}, false)
+
+
 keyput.ports.focus.subscribe(function(action) {
   setTimeout(function(){
     if (action === 'Enter') {
