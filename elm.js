@@ -11081,18 +11081,21 @@ Elm.ItemList.make = function (_elm) {
    var newItem = F2(function (desc,index) {    return {desc: desc,index: index};});
    var select = F2(function (index,items) {
       var filterf = function (item) {    return _U.eq(item.index,index);};
-      return A2($Maybe.withDefault,A2(newItem,"Check",0),$List.head(A2($List.filter,filterf,items)));
+      return A2($Maybe.withDefault,A2(newItem,"NoOp",999),$List.head(A2($List.filter,filterf,items)));
    });
    var keyHandler = F2(function (model,code) {
       var _p1 = code;
       switch (_p1)
       {case 13: var updateIndex = F2(function (i,item) {    return _U.update(item,{index: i});});
-           var selected = isMatch(model) ? A2(select,model.index,A2($List.indexedMap,updateIndex,A2(matches,model.string,model.items))) : A2(select,
+           var selected = isMatch(model) ? A2(select,
+           model.index,
+           A2($List.indexedMap,updateIndex,A2(matches,model.string,model.items))) : $Basics.not(strEmpty(model)) ? A2(newItem,"NoOp",999) : A2(select,
            model.index,
            model.items);
-           return _U.eq(selected.desc,"Check") ? Enter(Check) : _U.eq(selected.desc,"Note") ? Enter(Note) : _U.eq(selected.desc,
-           "Edit") ? Enter(Edit) : _U.eq(selected.desc,"Remove") ? Enter(Remove) : _U.eq(selected.desc,"Clear All") ? Enter(Clear) : _U.eq(selected.desc,
-           "Check All") ? Enter(CheckAll) : NoOp;
+           var _p2 = A2($Debug.log,"",selected);
+           return _U.eq(selected.desc,"Check") ? Enter(Check) : _U.eq(selected.desc,"––") ? Enter(Check) : _U.eq(selected.desc,
+           "Note") ? Enter(Note) : _U.eq(selected.desc,"Edit") ? Enter(Edit) : _U.eq(selected.desc,"Remove") ? Enter(Remove) : _U.eq(selected.desc,
+           "Clear All") ? Enter(Clear) : _U.eq(selected.desc,"Check All") ? Enter(CheckAll) : _U.eq(selected.desc,"NoOp") ? NoOp : NoOp;
          case 40: return Down;
          case 38: return Up;
          case 27: return Esc;
@@ -11107,7 +11110,7 @@ Elm.ItemList.make = function (_elm) {
               _U.list([$Html$Attributes.autofocus(true)
                       ,$Html$Attributes.value(model.string)
                       ,A2($Html$Events.onKeyDown,address,keyHandler(model))
-                      ,A3($Html$Events.on,"input",$Html$Events.targetValue,function (_p2) {    return A2($Signal.message,address,UpdateString(_p2));})
+                      ,A3($Html$Events.on,"input",$Html$Events.targetValue,function (_p3) {    return A2($Signal.message,address,UpdateString(_p3));})
                       ,$Html$Attributes.$class("input-actions")]),
               _U.list([]))
               ,A2($Html.ul,_U.list([$Html$Attributes.$class("list")]),A2($List.map,A2(item,address,model),items))]));

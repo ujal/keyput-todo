@@ -202,7 +202,7 @@ select index items =
     let filterf item = item.index == index
     in
         Maybe.withDefault
-            (newItem "Check" 0)
+            (newItem "NoOp" 999)
             (List.head (List.filter filterf items))
 
 
@@ -216,15 +216,19 @@ keyHandler model code =
                             |> matches model.string
                             |> List.indexedMap updateIndex
                             |> select model.index
+                    else if not (strEmpty model) then newItem "NoOp" 999
                     else select model.index model.items
                 updateIndex i item = { item | index = i }
+                _ = Debug.log "" selected
             in
                 if selected.desc == "Check" then Enter Check
+                else if selected.desc == "––" then Enter Check
                 else if selected.desc == "Note" then Enter Note
                 else if selected.desc == "Edit" then Enter Edit
                 else if selected.desc == "Remove" then Enter Remove
                 else if selected.desc == "Clear All" then Enter Clear
                 else if selected.desc == "Check All" then Enter CheckAll
+                else if selected.desc == "NoOp" then NoOp
                 else NoOp
         40 -> Down
         38 -> Up
