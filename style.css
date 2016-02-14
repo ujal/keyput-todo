@@ -27,7 +27,7 @@ html, body {
 }
 
 .input-note {
-  margin: 1.2rem 0 0;
+  margin: 1.2rem 0;
   font-size: 1.2rem;
   width: 80%;
   font-weight: normal;
@@ -50,3 +50,47 @@ ul {
   font-size: 1.2rem;
   line-height: 1.5;
 }
+
+/*
+*   Placeholder styles
+*/
+.input-main::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: hsla(0, 0%, 60%, 0.2);
+  text-align: center;
+}
+
+.input-main::-moz-placeholder { /* Firefox 19+ */
+  color: hsla(0, 0%, 60%, 0.2);
+  text-align: center;
+}
+
+.input-main:-ms-input-placeholder { /* IE 10+ */
+  color: hsla(0, 0%, 60%, 0.2);
+  text-align: center;
+}
+
+.input-main:-moz-placeholder { /* Firefox 18- */
+  text-align: center;
+  color: hsla(0, 0%, 60%, 0.2);
+}
+
+.actions input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color: hsla(0, 0%, 60%, 0.2);
+  text-align: center;
+}
+
+.actions input::-moz-placeholder { /* Firefox 19+ */
+  color: hsla(0, 0%, 60%, 0.2);
+  text-align: center;
+}
+
+.actions input:-ms-input-placeholder { /* IE 10+ */
+  color: hsla(0, 0%, 60%, 0.2);
+  text-align: center;
+}
+
+.actions input:-moz-placeholder { /* Firefox 18- */
+  text-align: center;
+  color: hsla(0, 0%, 60%, 0.2);
+}
+

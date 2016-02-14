@@ -39,13 +39,7 @@ type alias Item =
 init : Model
 init =
     { string = ""
-    , items =
-        [ newItem "a small but mighty todo app" 0 0
-        , newItem "type or search and press enter to" 1 1
-        , newItem "add, search or modify your todos" 2 2
-        , newItem "we add something only if not found" 3 3
-        , newItem "you got esc too - u know to esc" 4 4
-        ]
+    , items = []
     , uid = 4
     , index = 0
     , showActions = False
@@ -273,6 +267,7 @@ view address model =
             []
             [ input
                 [ autofocus True
+                , placeholder "add or search todos and press enter"
                 , value model.string
                 , onKeyDown address keyHandler
                 , on "input" targetValue (Signal.message address << UpdateString)

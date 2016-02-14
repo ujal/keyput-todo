@@ -169,6 +169,7 @@ view address model =
             [ class "actions" ]
             [ input
                 [ autofocus True
+                , placeholder "search actions"
                 , value model.string
                 , onKeyDown address (keyHandler model)
                 , on "input" targetValue (Signal.message address << UpdateString)

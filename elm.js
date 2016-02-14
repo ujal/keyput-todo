@@ -11108,6 +11108,7 @@ Elm.ItemList.make = function (_elm) {
       _U.list([$Html$Attributes.$class("actions")]),
       _U.list([A2($Html.input,
               _U.list([$Html$Attributes.autofocus(true)
+                      ,$Html$Attributes.placeholder("search actions")
                       ,$Html$Attributes.value(model.string)
                       ,A2($Html$Events.onKeyDown,address,keyHandler(model))
                       ,A3($Html$Events.on,"input",$Html$Events.targetValue,function (_p3) {    return A2($Signal.message,address,UpdateString(_p3));})
@@ -11276,6 +11277,7 @@ Elm.Main.make = function (_elm) {
       _U.list([]),
       _U.list([A2($Html.input,
               _U.list([$Html$Attributes.autofocus(true)
+                      ,$Html$Attributes.placeholder("add or search todos and press enter")
                       ,$Html$Attributes.value(model.string)
                       ,A2($Html$Events.onKeyDown,address,keyHandler)
                       ,A3($Html$Events.on,"input",$Html$Events.targetValue,function (_p5) {    return A2($Signal.message,address,UpdateString(_p5));})
@@ -11432,17 +11434,7 @@ Elm.Main.make = function (_elm) {
                  default: return false;}
            }()});}
    });
-   var init = {string: ""
-              ,items: _U.list([A3(newItem,"a small but mighty todo app",0,0)
-                              ,A3(newItem,"type or search and press enter to",1,1)
-                              ,A3(newItem,"add, search or modify your todos",2,2)
-                              ,A3(newItem,"we add something only if not found",3,3)
-                              ,A3(newItem,"you got esc too - u know to esc",4,4)])
-              ,uid: 4
-              ,index: 0
-              ,showActions: false
-              ,showEdit: false
-              ,showNote: false};
+   var init = {string: "",items: _U.list([]),uid: 4,index: 0,showActions: false,showEdit: false,showNote: false};
    var initialModel = A2($Maybe.withDefault,init,getStorage);
    var model = A3($Signal.foldp,update,initialModel,actions.signal);
    var main = A2($Signal.map,view(actions.address),model);
