@@ -18,14 +18,12 @@ import Time
 type alias Model =
     { string : String
     , items : List Item
-    , uid : Int
     , index : Int
     }
 
 
 type alias Item =
     { desc : String
-    , id : Int
     , index : Int
     }
 
@@ -34,26 +32,25 @@ init : Model
 init =
     { string = ""
     , items = items
-    , uid = 0
     , index = 0
     }
 
 
 items : List Item
 items =
-    [ newItem "Check" 0 0
-    , newItem "Edit" 1 1
-    , newItem "Remove" 2 2
-    , newItem "––" 3 3
-    , newItem "Clear All" 4 4
-    , newItem "Check All" 5 5
+    [ newItem "Check" 0
+    , newItem "Note" 1
+    , newItem "Edit" 2
+    , newItem "Remove" 3
+    , newItem "––" 4
+    , newItem "Clear All" 5
+    , newItem "Check All" 6
     ]
 
 
-newItem : String -> Int -> Int -> Item
-newItem desc id index =
+newItem : String -> Int -> Item
+newItem desc index =
     { desc = desc
-    , id = id
     , index = index
     }
 
@@ -74,7 +71,7 @@ type Action
     | Esc
 
 
-type EnterAction = Check | Remove | Clear | Edit | CheckAll
+type EnterAction = Check | Remove | Clear | Edit | CheckAll | Note
 
 
 matches : String -> List Item -> List Item
@@ -205,7 +202,7 @@ select index items =
     let filterf item = item.index == index
     in
         Maybe.withDefault
-            (newItem "Check" 0 0)
+            (newItem "Check" 0)
             (List.head (List.filter filterf items))
 
 
@@ -223,6 +220,7 @@ keyHandler model code =
                 updateIndex i item = { item | index = i }
             in
                 if selected.desc == "Check" then Enter Check
+                else if selected.desc == "Note" then Enter Note
                 else if selected.desc == "Edit" then Enter Edit
                 else if selected.desc == "Remove" then Enter Remove
                 else if selected.desc == "Clear All" then Enter Clear

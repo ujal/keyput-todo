@@ -22,11 +22,13 @@ type alias Model =
     , index : Int
     , showActions : Bool
     , showEdit : Bool
+    , showNote : Bool
     }
 
 
 type alias Item =
     { desc : String
+    , note : String
     , id : Int
     , index : Int
     , itemActions : ItemList.Model
@@ -41,17 +43,20 @@ init =
         [ newItem "a small but mighty todo app" 0 0
         , newItem "type or search and press enter" 1 1
         , newItem "to add, search or modify your todos" 2 2
+        , newItem "and you got esc too" 3 3
         ]
-    , uid = 3
+    , uid = 4
     , index = 0
     , showActions = False
     , showEdit = False
+    , showNote = False
     }
 
 
 newItem : String -> Int -> Int -> Item
 newItem desc id index =
     { desc = desc
+    , note = ""
     , id = id
     , index = index
     , itemActions = ItemList.init
@@ -67,6 +72,9 @@ type Action
     | EditItem Int String
     | EditEnter
     | EditEsc
+    | EditNote Int String
+    | EditNoteEnter
+    | EditNoteEsc
     | Enter
     | Up
     | Down
@@ -127,6 +135,15 @@ update action model =
 
         EditEsc -> { model | showEdit = False }
 
+        EditNote id str ->
+            let update item = if item.id == id then { item | note = str } else item
+            in
+                { model | items = List.map update model.items }
+
+        EditNoteEnter -> { model | showNote = False }
+
+        EditNoteEsc -> { model | showNote = False }
+
         Enter ->
             { model |
                 uid = if addNot model then model.uid else model.uid + 1,
@@ -155,13 +172,16 @@ update action model =
                         if isMatch model
                         then Basics.min (model.index + 1) (matchesLength - 1)
                         else Basics.min (model.index + 1) (itemLength - 1),
-                    showActions = False
+                    showActions = False,
+                    showNote = False
                 }
 
         Esc ->
             { model |
+                showNote = False,
                 showActions = False,
-                string = if model.showActions then model.string else ""}
+                string = if model.showActions then model.string else ""
+            }
 
         ItemList id act ->
             let update item =
@@ -215,6 +235,7 @@ update action model =
                             "Enter Clear" -> False
                             "Enter Edit" -> False
                             "Enter CheckAll" -> False
+                            "Enter Note" -> False
                             _ -> True,
                     showEdit =
                         case (toString act) of
@@ -223,8 +244,17 @@ update action model =
                             "Enter Remove" -> False
                             "Enter Clear" -> False
                             "Enter Edit" -> True
+                            "Enter Note" -> False
+                            _ -> False,
+                    showNote =
+                        case (toString act) of
+                            "Esc" -> False
+                            "Enter Check" -> False
+                            "Enter Remove" -> False
+                            "Enter Clear" -> False
+                            "Enter Edit" -> False
+                            "Enter Note" -> True
                             _ -> False
-
                 }
 
 
@@ -265,6 +295,7 @@ item address model item =
         displayActions = if selected && model.showActions then "block" else "none"
         displayEdit = if selected && model.showEdit then "block" else "none"
         displayItem = if selected && model.showEdit then "none" else "block"
+        displayNote = if selected && model.showNote then "block" else "none"
         decor = if item.done then "line-through" else "none"
         itemDesc = if item.desc == "" then "#todo" else item.desc
         itemActions =
@@ -301,6 +332,22 @@ item address model item =
                     ]
                     []
                 ]
+            , div
+                [ style [ ("display", displayNote)
+                        , ("font-weight", "normal")
+                        ] ]
+                [ textarea
+                    [ class "input-note"
+                    , value item.note
+                    , rows 3
+                    , onKeyDown address noteHandler
+                    , on
+                        "input"
+                        targetValue
+                        (Signal.message address << EditNote item.id)
+                    ]
+                    []
+                ]
             ]
 
 
@@ -319,6 +366,14 @@ editHandler code =
     case code of
         13 -> EditEnter
         27 -> EditEsc
+        _ -> NoOp
+
+
+noteHandler : Int -> Action
+noteHandler code =
+    case code of
+        13 -> EditNoteEnter
+        27 -> EditNoteEsc
         _ -> NoOp
 
 
@@ -355,25 +410,30 @@ port focus : Signal String
 port focus =
     let needsFocus act =
             case act of
-              Enter -> True
-              EditEnter -> True
-              EditEsc -> True
-              ItemList _ act ->
-                case (toString act) of
-                    "Esc" -> True
-                    "Enter Check" -> True
-                    "Enter CheckAll" -> True
-                    "Enter Remove" -> True
-                    "Enter Clear" -> True
-                    "Enter Edit" -> True
-                    _ -> False
-              _ -> False
+                Enter -> True
+                EditEnter -> True
+                EditEsc -> True
+                EditNoteEnter -> True
+                EditNoteEsc -> True
+                ItemList _ act ->
+                    case (toString act) of
+                        "Esc" -> True
+                        "Enter Check" -> True
+                        "Enter CheckAll" -> True
+                        "Enter Remove" -> True
+                        "Enter Clear" -> True
+                        "Enter Edit" -> True
+                        "Enter Note" -> True
+                        _ -> False
+                _ -> False
 
         toActionString act =
             case act of
                 Enter -> "Enter"
                 EditEnter -> "ItemList Enter"
                 EditEsc -> "ItemList Enter"
+                EditNoteEnter -> "ItemList Enter"
+                EditNoteEsc -> "ItemList Enter"
                 ItemList _ act ->
                     case (toString act) of
                         "Esc" -> "ItemList Esc"
@@ -382,6 +442,7 @@ port focus =
                         "Enter Remove" -> "ItemList Enter"
                         "Enter Clear" -> "ItemList Enter"
                         "Enter Edit" -> "ItemList Edit"
+                        "Enter Note" -> "ItemList Note"
                         _ -> ""
                 _ -> ""
 
