@@ -11440,7 +11440,7 @@ Elm.Main.make = function (_elm) {
               ,items: _U.list([A3(newItem,"a small but mighty todo app",0,0)
                               ,A3(newItem,"type or search and press enter",1,1)
                               ,A3(newItem,"to add, search or modify your todos",2,2)
-                              ,A3(newItem,"and you got esc too",3,3)])
+                              ,A3(newItem,"you got esc too",3,3)])
               ,uid: 4
               ,index: 0
               ,showActions: false

@@ -43,7 +43,7 @@ init =
         [ newItem "a small but mighty todo app" 0 0
         , newItem "type or search and press enter" 1 1
         , newItem "to add, search or modify your todos" 2 2
-        , newItem "and you got esc too" 3 3
+        , newItem "you got esc too" 3 3
         ]
     , uid = 4
     , index = 0
