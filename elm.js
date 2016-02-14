@@ -11225,6 +11225,7 @@ Elm.Main.make = function (_elm) {
    var editHandler = function (code) {    var _p1 = code;switch (_p1) {case 13: return EditEnter;case 27: return EditEsc;default: return NoOp;}};
    var item = F3(function (address,model,item) {
       var itemActions = A2($ItemList.view,A2($Signal.forwardTo,address,ItemList(item.id)),item.itemActions);
+      var itemDesc = _U.eq(item.desc,"") ? "#todo" : item.desc;
       var decor = item.done ? "line-through" : "none";
       var selected = _U.eq(item.index,model.index);
       var fontWeight = selected ? "bold" : "normal";
@@ -11239,7 +11240,7 @@ Elm.Main.make = function (_elm) {
                                               ,{ctor: "_Tuple2",_0: "padding-left",_1: paddingLeft}]))]),
       _U.list([A2($Html.div,
               _U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "text-decoration",_1: decor},{ctor: "_Tuple2",_0: "display",_1: displayItem}]))]),
-              _U.list([$Html.text(item.desc)]))
+              _U.list([$Html.text(itemDesc)]))
               ,A2($Html.div,_U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "display",_1: displayActions}]))]),_U.list([itemActions]))
               ,A2($Html.div,
               _U.list([$Html$Attributes.style(_U.list([{ctor: "_Tuple2",_0: "display",_1: displayEdit},{ctor: "_Tuple2",_0: "font-weight",_1: "normal"}]))]),
@@ -11390,7 +11391,14 @@ Elm.Main.make = function (_elm) {
                  default: return false;}
            }()});}
    });
-   var init = {string: "",items: _U.list([]),uid: 0,index: 0,showActions: false,showEdit: false};
+   var init = {string: ""
+              ,items: _U.list([A3(newItem,"a small but mighty todo app",0,0)
+                              ,A3(newItem,"type or search and press enter",1,1)
+                              ,A3(newItem,"to add, search or modify your todos",2,2)])
+              ,uid: 3
+              ,index: 0
+              ,showActions: false
+              ,showEdit: false};
    var initialModel = A2($Maybe.withDefault,init,getStorage);
    var model = A3($Signal.foldp,update,initialModel,actions.signal);
    var main = A2($Signal.map,view(actions.address),model);

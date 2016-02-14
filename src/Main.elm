@@ -37,8 +37,12 @@ type alias Item =
 init : Model
 init =
     { string = ""
-    , items = []
-    , uid = 0
+    , items =
+        [ newItem "a small but mighty todo app" 0 0
+        , newItem "type or search and press enter" 1 1
+        , newItem "to add, search or modify your todos" 2 2
+        ]
+    , uid = 3
     , index = 0
     , showActions = False
     , showEdit = False
@@ -117,9 +121,7 @@ update action model =
         EditItem id str ->
             let update item = if item.id == id then { item | desc = str } else item
             in
-                { model |
-                    items = List.map update model.items
-                }
+                { model | items = List.map update model.items }
 
         EditEnter -> { model | showEdit = False }
 
@@ -264,6 +266,7 @@ item address model item =
         displayEdit = if selected && model.showEdit then "block" else "none"
         displayItem = if selected && model.showEdit then "none" else "block"
         decor = if item.done then "line-through" else "none"
+        itemDesc = if item.desc == "" then "#todo" else item.desc
         itemActions =
             ItemList.view
                 (Signal.forwardTo address (ItemList item.id))
@@ -279,7 +282,7 @@ item address model item =
                 [ style [ ("text-decoration", decor)
                         , ("display", displayItem)
                         ]]
-                [ text item.desc ]
+                [ text itemDesc ]
             , div
                 [ style [ ("display", displayActions) ] ]
                 [ itemActions ]

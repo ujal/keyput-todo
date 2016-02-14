@@ -33,11 +33,12 @@ ul {
   margin: 2.5888rem auto;
   list-style: none;
   font-size: 1.618rem;
-  line-height: 1.5;
+  line-height: 1.6;
   padding: 0;
 }
 
 .actions ul {
   margin: 0;
   font-size: 1.2rem;
+  line-height: 1.5;
 }
