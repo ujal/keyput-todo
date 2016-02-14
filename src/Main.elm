@@ -43,7 +43,8 @@ init =
         [ newItem "a small but mighty todo app" 0 0
         , newItem "type or search and press enter" 1 1
         , newItem "to add, search or modify your todos" 2 2
-        , newItem "you got esc too" 3 3
+        , newItem "we add something only if not found" 3 3
+        , newItem "you got esc too" 4 4
         ]
     , uid = 4
     , index = 0
@@ -297,7 +298,10 @@ item address model item =
         displayItem = if selected && model.showEdit then "none" else "block"
         displayNote = if selected && model.showNote then "block" else "none"
         decor = if item.done then "line-through" else "none"
-        itemDesc = if item.desc == "" then "#todo" else item.desc
+        itemDesc =
+            if item.desc == "" then "#todo"
+            else if item.note /= "" then ("❐ " ++ (item.desc))
+            else item.desc
         itemActions =
             ItemList.view
                 (Signal.forwardTo address (ItemList item.id))
