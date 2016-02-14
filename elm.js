@@ -11215,7 +11215,6 @@ Elm.Main.make = function (_elm) {
    var Up = {ctor: "Up"};
    var Enter = {ctor: "Enter"};
    var EditNoteEsc = {ctor: "EditNoteEsc"};
-   var EditNoteEnter = {ctor: "EditNoteEnter"};
    var EditNote = F2(function (a,b) {    return {ctor: "EditNote",_0: a,_1: b};});
    var EditEsc = {ctor: "EditEsc"};
    var EditEnter = {ctor: "EditEnter"};
@@ -11232,10 +11231,10 @@ Elm.Main.make = function (_elm) {
          default: return NoOp;}
    };
    var editHandler = function (code) {    var _p1 = code;switch (_p1) {case 13: return EditEnter;case 27: return EditEsc;default: return NoOp;}};
-   var noteHandler = function (code) {    var _p2 = code;switch (_p2) {case 13: return EditNoteEnter;case 27: return EditNoteEsc;default: return NoOp;}};
+   var noteHandler = function (code) {    var _p2 = code;if (_p2 === 27) {    return EditNoteEsc;} else {    return NoOp;}};
    var item = F3(function (address,model,item) {
       var itemActions = A2($ItemList.view,A2($Signal.forwardTo,address,ItemList(item.id)),item.itemActions);
-      var itemDesc = _U.eq(item.desc,"") ? "#todo" : !_U.eq(item.note,"") ? A2($Basics._op["++"],"❐ ",item.desc) : item.desc;
+      var itemDesc = _U.eq(item.desc,"") ? "#todo" : !_U.eq(item.note,"") ? A2($Basics._op["++"],"❐ ",item.desc) : A2($Basics._op["++"],"– ",item.desc);
       var decor = item.done ? "line-through" : "none";
       var selected = _U.eq(item.index,model.index);
       var fontWeight = selected ? "bold" : "normal";
@@ -11296,7 +11295,6 @@ Elm.Main.make = function (_elm) {
          {case "Enter": return "Enter";
             case "EditEnter": return "ItemList Enter";
             case "EditEsc": return "ItemList Enter";
-            case "EditNoteEnter": return "ItemList Enter";
             case "EditNoteEsc": return "ItemList Enter";
             case "ItemList": var _p7 = $Basics.toString(_p6._1);
               switch (_p7)
@@ -11316,7 +11314,6 @@ Elm.Main.make = function (_elm) {
          {case "Enter": return true;
             case "EditEnter": return true;
             case "EditEsc": return true;
-            case "EditNoteEnter": return true;
             case "EditNoteEsc": return true;
             case "ItemList": var _p9 = $Basics.toString(_p8._1);
               switch (_p9)
@@ -11345,7 +11342,6 @@ Elm.Main.make = function (_elm) {
          case "EditEsc": return _U.update(model,{showEdit: false});
          case "EditNote": var update = function (item) {    return _U.eq(item.id,_p10._0) ? _U.update(item,{note: _p10._1}) : item;};
            return _U.update(model,{items: A2($List.map,update,model.items)});
-         case "EditNoteEnter": return _U.update(model,{showNote: false});
          case "EditNoteEsc": return _U.update(model,{showNote: false});
          case "Enter": return _U.update(model,
            {uid: addNot(model) ? model.uid : model.uid + 1
@@ -11485,7 +11481,6 @@ Elm.Main.make = function (_elm) {
                              ,EditEnter: EditEnter
                              ,EditEsc: EditEsc
                              ,EditNote: EditNote
-                             ,EditNoteEnter: EditNoteEnter
                              ,EditNoteEsc: EditNoteEsc
                              ,Enter: Enter
                              ,Up: Up

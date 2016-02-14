@@ -74,7 +74,6 @@ type Action
     | EditEnter
     | EditEsc
     | EditNote Int String
-    | EditNoteEnter
     | EditNoteEsc
     | Enter
     | Up
@@ -140,8 +139,6 @@ update action model =
             let update item = if item.id == id then { item | note = str } else item
             in
                 { model | items = List.map update model.items }
-
-        EditNoteEnter -> { model | showNote = False }
 
         EditNoteEsc -> { model | showNote = False }
 
@@ -300,8 +297,8 @@ item address model item =
         decor = if item.done then "line-through" else "none"
         itemDesc =
             if item.desc == "" then "#todo"
-            else if item.note /= "" then ("❐ " ++ (item.desc))
-            else item.desc
+            else if item.note /= "" then ("❐ " ++ item.desc)
+            else ("– " ++ item.desc)
         itemActions =
             ItemList.view
                 (Signal.forwardTo address (ItemList item.id))
@@ -376,7 +373,6 @@ editHandler code =
 noteHandler : Int -> Action
 noteHandler code =
     case code of
-        13 -> EditNoteEnter
         27 -> EditNoteEsc
         _ -> NoOp
 
@@ -417,7 +413,6 @@ port focus =
                 Enter -> True
                 EditEnter -> True
                 EditEsc -> True
-                EditNoteEnter -> True
                 EditNoteEsc -> True
                 ItemList _ act ->
                     case (toString act) of
@@ -436,7 +431,6 @@ port focus =
                 Enter -> "Enter"
                 EditEnter -> "ItemList Enter"
                 EditEsc -> "ItemList Enter"
-                EditNoteEnter -> "ItemList Enter"
                 EditNoteEsc -> "ItemList Enter"
                 ItemList _ act ->
                     case (toString act) of
