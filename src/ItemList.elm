@@ -1,4 +1,4 @@
-module ItemList (Model, init, Action, update, view, Context) where
+module ItemList (Model, init, Action, update, view) where
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -38,29 +38,17 @@ init =
 
 items : List Item
 items =
-    [ newItem "Check" 0
-    , newItem "Note" 1
-    , newItem "Edit" 2
-    , newItem "Remove" 3
-    , newItem "––" 4
-    , newItem "Clear All" 5
-    , newItem "Check All" 6
+    [ Item "Check" 0
+    , Item "Note" 1
+    , Item "Edit" 2
+    , Item "Remove" 3
+    , Item "––" 4
+    , Item "Clear All" 5
+    , Item "Check All" 6
     ]
 
 
-newItem : String -> Int -> Item
-newItem desc index =
-    { desc = desc
-    , index = index
-    }
-
-
 -- UPDATE
-
-type alias Context =
-    { actions : Signal.Address Action
-    , itemEnter : Signal.Address ()
-    }
 
 type Action
     = NoOp
@@ -203,7 +191,7 @@ select index items =
     let filterf item = item.index == index
     in
         Maybe.withDefault
-            (newItem "NoOp" 999)
+            (Item "NoOp" 999)
             (List.head (List.filter filterf items))
 
 
@@ -217,7 +205,7 @@ keyHandler model code =
                             |> matches model.string
                             |> List.indexedMap updateIndex
                             |> select model.index
-                    else if not (strEmpty model) then newItem "NoOp" 999
+                    else if not (strEmpty model) then Item "NoOp" 999
                     else select model.index model.items
                 updateIndex i item = { item | index = i }
                 _ = Debug.log "" selected

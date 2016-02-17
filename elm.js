@@ -11077,11 +11077,18 @@ Elm.ItemList.make = function (_elm) {
    var Enter = function (a) {    return {ctor: "Enter",_0: a};};
    var UpdateString = function (a) {    return {ctor: "UpdateString",_0: a};};
    var NoOp = {ctor: "NoOp"};
-   var Context = F2(function (a,b) {    return {actions: a,itemEnter: b};});
-   var newItem = F2(function (desc,index) {    return {desc: desc,index: index};});
+   var Item = F2(function (a,b) {    return {desc: a,index: b};});
+   var items = _U.list([A2(Item,"Check",0)
+                       ,A2(Item,"Note",1)
+                       ,A2(Item,"Edit",2)
+                       ,A2(Item,"Remove",3)
+                       ,A2(Item,"––",4)
+                       ,A2(Item,"Clear All",5)
+                       ,A2(Item,"Check All",6)]);
+   var init = {string: "",items: items,index: 0};
    var select = F2(function (index,items) {
       var filterf = function (item) {    return _U.eq(item.index,index);};
-      return A2($Maybe.withDefault,A2(newItem,"NoOp",999),$List.head(A2($List.filter,filterf,items)));
+      return A2($Maybe.withDefault,A2(Item,"NoOp",999),$List.head(A2($List.filter,filterf,items)));
    });
    var keyHandler = F2(function (model,code) {
       var _p1 = code;
@@ -11089,7 +11096,7 @@ Elm.ItemList.make = function (_elm) {
       {case 13: var updateIndex = F2(function (i,item) {    return _U.update(item,{index: i});});
            var selected = isMatch(model) ? A2(select,
            model.index,
-           A2($List.indexedMap,updateIndex,A2(matches,model.string,model.items))) : $Basics.not(strEmpty(model)) ? A2(newItem,"NoOp",999) : A2(select,
+           A2($List.indexedMap,updateIndex,A2(matches,model.string,model.items))) : $Basics.not(strEmpty(model)) ? A2(Item,"NoOp",999) : A2(select,
            model.index,
            model.items);
            var _p2 = A2($Debug.log,"",selected);
@@ -11116,17 +11123,8 @@ Elm.ItemList.make = function (_elm) {
               _U.list([]))
               ,A2($Html.ul,_U.list([$Html$Attributes.$class("list")]),A2($List.map,A2(item,address,model),items))]));
    });
-   var items = _U.list([A2(newItem,"Check",0)
-                       ,A2(newItem,"Note",1)
-                       ,A2(newItem,"Edit",2)
-                       ,A2(newItem,"Remove",3)
-                       ,A2(newItem,"––",4)
-                       ,A2(newItem,"Clear All",5)
-                       ,A2(newItem,"Check All",6)]);
-   var init = {string: "",items: items,index: 0};
-   var Item = F2(function (a,b) {    return {desc: a,index: b};});
    var Model = F3(function (a,b,c) {    return {string: a,items: b,index: c};});
-   return _elm.ItemList.values = {_op: _op,init: init,update: update,view: view,Model: Model,Context: Context};
+   return _elm.ItemList.values = {_op: _op,init: init,update: update,view: view,Model: Model};
 };
 Elm.Main = Elm.Main || {};
 Elm.Main.make = function (_elm) {
