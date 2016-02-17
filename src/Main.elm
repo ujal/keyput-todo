@@ -180,74 +180,73 @@ update action model =
                     if item.id == id then
                         { item | itemActions = ItemList.update act item.itemActions }
                     else item
-                updateItems items = List.map update items
                 toggle i = if i.id == id then { i | done = not i.done } else i
                 checkall item = { item | done = True }
+                remove item = item.id /= id
             in
-                { model |
-                    index =
-                        case (toString act) of
-                            "Esc" -> model.index
-                            "Enter Check" -> model.index
-                            "Enter Remove" -> 0
-                            "Enter Clear" -> 0
-                            "Enter CheckAll" -> 0
-                            _ -> model.index,
-                    string =
-                        case (toString act) of
-                            "Esc" -> model.string
-                            "Enter Check" -> ""
-                            "Enter Remove" -> ""
-                            "Enter Clear" -> ""
-                            "Enter CheckAll" -> ""
-                            _ -> model.string,
-                    items =
-                        case (toString act) of
-                            "Esc" -> updateItems model.items
-                            "Enter Check" ->
-                                List.map toggle (updateItems model.items)
-                            "Enter CheckAll" ->
-                                List.map checkall (updateItems model.items)
-                            "Enter Remove" ->
+                case (toString act) of
+                    "Esc" ->
+                        { model |
+                            showActions = False,
+                            items = model.items |> List.map update
+                        }
+
+                    "Enter Check" ->
+                        { model |
+                            items =
                                 model.items
-                                    |> updateItems
-                                    |> List.filter (\i -> i.id /= id)
-                                    |> List.indexedMap updateIndex
-                            "Enter Clear" ->
+                                |> List.map update
+                                |> List.map toggle,
+                            showActions = False
+                        }
+
+                    "Enter Remove" ->
+                        { model |
+                            items = model.items
+                                |> List.map update
+                                |> List.filter remove
+                                |> List.indexedMap updateIndex,
+                            showActions = False,
+                            index = 0,
+                            string = ""
+                        }
+
+                    "Enter CheckAll" ->
+                        { model |
+                            items =
                                 model.items
-                                    |> updateItems
-                                    |> List.filter (not << .done)
-                                    |> List.indexedMap updateIndex
-                            _ -> updateItems model.items,
-                    showActions =
-                        case (toString act) of
-                            "Esc" -> False
-                            "Enter Check" -> False
-                            "Enter Remove" -> False
-                            "Enter Clear" -> False
-                            "Enter Edit" -> False
-                            "Enter CheckAll" -> False
-                            "Enter Note" -> False
-                            _ -> True,
-                    showEdit =
-                        case (toString act) of
-                            "Esc" -> False
-                            "Enter Check" -> False
-                            "Enter Remove" -> False
-                            "Enter Clear" -> False
-                            "Enter Edit" -> True
-                            "Enter Note" -> False
-                            _ -> False,
-                    showNote =
-                        case (toString act) of
-                            "Esc" -> False
-                            "Enter Check" -> False
-                            "Enter Remove" -> False
-                            "Enter Clear" -> False
-                            "Enter Edit" -> False
-                            "Enter Note" -> True
-                            _ -> False
-                }
+                                |> List.map update
+                                |> List.map checkall,
+                            showActions = False
+                        }
+
+                    "Enter Clear" ->
+                        { model |
+                            items = model.items
+                                |> List.map update
+                                |> List.filter (not << .done)
+                                |> List.indexedMap updateIndex,
+                            showActions = False,
+                            index = 0,
+                            string = ""
+                        }
+
+                    "Enter Note" ->
+                        { model |
+                            showNote = True,
+                            showActions = False,
+                            items = model.items |> List.map update
+                        }
+
+                    "Enter Edit" ->
+                        { model |
+                            showEdit = True,
+                            showActions = False,
+                            items = model.items |> List.map update
+                        }
+
+                    _ ->
+                        { model | items = List.map update model.items }
 
 
 

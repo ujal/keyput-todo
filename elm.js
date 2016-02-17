@@ -11358,81 +11358,29 @@ Elm.Main.make = function (_elm) {
            ,showActions: false
            ,showNote: false});
          case "Esc": return _U.update(model,{showNote: false,showActions: false,string: model.showActions ? model.string : ""});
-         default: var _p19 = _p10._0;
-           var _p18 = _p10._1;
+         default: var _p14 = _p10._0;
+           var _p13 = _p10._1;
+           var remove = function (item) {    return !_U.eq(item.id,_p14);};
            var checkall = function (item) {    return _U.update(item,{done: true});};
-           var toggle = function (i) {    return _U.eq(i.id,_p19) ? _U.update(i,{done: $Basics.not(i.done)}) : i;};
-           var update = function (item) {    return _U.eq(item.id,_p19) ? _U.update(item,{itemActions: A2($ItemList.update,_p18,item.itemActions)}) : item;};
-           var updateItems = function (items) {    return A2($List.map,update,items);};
-           return _U.update(model,
-           {index: function () {
-              var _p11 = $Basics.toString(_p18);
-              switch (_p11)
-              {case "Esc": return model.index;
-                 case "Enter Check": return model.index;
-                 case "Enter Remove": return 0;
-                 case "Enter Clear": return 0;
-                 case "Enter CheckAll": return 0;
-                 default: return model.index;}
-           }()
-           ,string: function () {
-              var _p12 = $Basics.toString(_p18);
-              switch (_p12)
-              {case "Esc": return model.string;
-                 case "Enter Check": return "";
-                 case "Enter Remove": return "";
-                 case "Enter Clear": return "";
-                 case "Enter CheckAll": return "";
-                 default: return model.string;}
-           }()
-           ,items: function () {
-              var _p13 = $Basics.toString(_p18);
-              switch (_p13)
-              {case "Esc": return updateItems(model.items);
-                 case "Enter Check": return A2($List.map,toggle,updateItems(model.items));
-                 case "Enter CheckAll": return A2($List.map,checkall,updateItems(model.items));
-                 case "Enter Remove": return A2($List.indexedMap,
-                   updateIndex,
-                   A2($List.filter,function (i) {    return !_U.eq(i.id,_p19);},updateItems(model.items)));
-                 case "Enter Clear": return A2($List.indexedMap,
-                   updateIndex,
-                   A2($List.filter,function (_p14) {    return $Basics.not(function (_) {    return _.done;}(_p14));},updateItems(model.items)));
-                 default: return updateItems(model.items);}
-           }()
-           ,showActions: function () {
-              var _p15 = $Basics.toString(_p18);
-              switch (_p15)
-              {case "Esc": return false;
-                 case "Enter Check": return false;
-                 case "Enter Remove": return false;
-                 case "Enter Clear": return false;
-                 case "Enter Edit": return false;
-                 case "Enter CheckAll": return false;
-                 case "Enter Note": return false;
-                 default: return true;}
-           }()
-           ,showEdit: function () {
-              var _p16 = $Basics.toString(_p18);
-              switch (_p16)
-              {case "Esc": return false;
-                 case "Enter Check": return false;
-                 case "Enter Remove": return false;
-                 case "Enter Clear": return false;
-                 case "Enter Edit": return true;
-                 case "Enter Note": return false;
-                 default: return false;}
-           }()
-           ,showNote: function () {
-              var _p17 = $Basics.toString(_p18);
-              switch (_p17)
-              {case "Esc": return false;
-                 case "Enter Check": return false;
-                 case "Enter Remove": return false;
-                 case "Enter Clear": return false;
-                 case "Enter Edit": return false;
-                 case "Enter Note": return true;
-                 default: return false;}
-           }()});}
+           var toggle = function (i) {    return _U.eq(i.id,_p14) ? _U.update(i,{done: $Basics.not(i.done)}) : i;};
+           var update = function (item) {    return _U.eq(item.id,_p14) ? _U.update(item,{itemActions: A2($ItemList.update,_p13,item.itemActions)}) : item;};
+           var _p11 = $Basics.toString(_p13);
+           switch (_p11)
+           {case "Esc": return _U.update(model,{showActions: false,items: A2($List.map,update,model.items)});
+              case "Enter Check": return _U.update(model,{items: A2($List.map,toggle,A2($List.map,update,model.items)),showActions: false});
+              case "Enter Remove": return _U.update(model,
+                {items: A2($List.indexedMap,updateIndex,A2($List.filter,remove,A2($List.map,update,model.items))),showActions: false,index: 0,string: ""});
+              case "Enter CheckAll": return _U.update(model,{items: A2($List.map,checkall,A2($List.map,update,model.items)),showActions: false});
+              case "Enter Clear": return _U.update(model,
+                {items: A2($List.indexedMap,
+                updateIndex,
+                A2($List.filter,function (_p12) {    return $Basics.not(function (_) {    return _.done;}(_p12));},A2($List.map,update,model.items)))
+                ,showActions: false
+                ,index: 0
+                ,string: ""});
+              case "Enter Note": return _U.update(model,{showNote: true,showActions: false,items: A2($List.map,update,model.items)});
+              case "Enter Edit": return _U.update(model,{showEdit: true,showActions: false,items: A2($List.map,update,model.items)});
+              default: return _U.update(model,{items: A2($List.map,update,model.items)});}}
    });
    var init = {string: "",items: _U.list([]),uid: 4,index: 0,showActions: false,showEdit: false,showNote: false};
    var initialModel = A2($Maybe.withDefault,init,getStorage);
