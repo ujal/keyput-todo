@@ -6,6 +6,11 @@ html, body {
   height: 97%;
 }
 
+
+/*
+ * Main List
+ */
+
 .input-main {
   display: block;
   width: 80%;
@@ -15,7 +20,23 @@ html, body {
   line-height: 1.6;
 }
 
-.actions input {
+ul {
+  display: block;
+  width: 80%;
+  max-width: 40rem;
+  margin: 2.5888rem auto;
+  list-style: none;
+  font-size: 1.618rem;
+  line-height: 1.6;
+  padding: 0;
+}
+
+
+/*
+ * Action List
+ */
+
+.input-actions {
   margin: 1.2rem 0 1.2rem;
   font-size: 1.2rem;
   width: 40%;
@@ -34,26 +55,17 @@ html, body {
   font-size: 1rem;
 }
 
-ul {
-  display: block;
-  width: 80%;
-  max-width: 40rem;
-  margin: 2.5888rem auto;
-  list-style: none;
-  font-size: 1.618rem;
-  line-height: 1.6;
-  padding: 0;
-}
-
 .actions ul {
   margin: 0;
   font-size: 1.2rem;
   line-height: 1.5;
 }
 
+
 /*
 *   Placeholder styles
 */
+
 .input-main::-webkit-input-placeholder { /* Chrome/Opera/Safari */
   color: hsla(0, 0%, 60%, 0.2);
   text-align: center;
